@@ -6,11 +6,14 @@ from datetime import datetime
 from datetime import date
 from datetime import timedelta
 from selenium import webdriver
+import chromedriver_autoinstaller
 from selenium.webdriver.common.by import By
-import chromedriver_binary
+#import chromedriver_binary
+from chromedriver_py import binary_path
 from time import sleep
 import requests
 from bs4 import BeautifulSoup
+from trade import trade
 
 HEADER = {'Connection': 'keep-alive',
             'Expires': '-1',
@@ -30,6 +33,7 @@ def getTrades(date, member=None):
     mem = None
     if member is not None:
         mem = getMemberCode(member)
+    print("Ticks not found: ")
     while stop != True:
         pageNum += 1
         stop, data = _getPageInfo(date, pageNum, member=mem)
@@ -43,7 +47,8 @@ def _getPageInfo(dateStop, pageNum, member=None):
     pageNum = an int that tells the page to search
     returns a list of [tick, saleType(buy or sell), datebought, dateDis] for each stock found
     """
-    driver = webdriver.Chrome()
+    #chromedriver_autoinstaller.install()
+    driver = webdriver.Chrome(executable_path=binary_path)
     if member != None:
         driver.get(f"https://www.capitoltrades.com/trades?page={str(pageNum)}&pageSize=50&politician={member}")
     else:
@@ -65,7 +70,11 @@ def _getPageInfo(dateStop, pageNum, member=None):
         dateBought = driver.find_element(By.XPATH, f"//table/tbody/tr[{i}]/td[4]").text.replace("\n", " ")
         dateBought = abrev_to_unix(dateBought)
         member = driver.find_element(By.XPATH, f"//table/tbody/tr[{i}]/td[1]").text.split("\n")
-        pageInfo.append([tick[1], saleType, dateBought, dateDis, member[0]])
+        if tick[1] != "N/A":
+            try:
+                pageInfo.append(trade(tick[1], saleType, dateBought, dateDis, member[0]))
+            except AttributeError:
+                print(tick[1])
         #print("row data:", tick[1], saleType, dateBought, dateDis, member)
     return stop, pageInfo
 
@@ -88,7 +97,8 @@ def getMemberCode(member):
     """return a congress members code for capitaltrades
     example member: Doe, John
     """
-    driver = webdriver.Chrome()
+    #svc = webdriver.ChromeService(executable_path=binary_path)
+    driver = webdriver.Chrome(executable_path=binary_path)
     driver.get("https://www.congress.gov/help/field-values/member-bioguide-ids")
     tbody = driver.find_element(By.XPATH, "//table[@class='std full']/tbody")
     tb = tbody.text.split("\n")
@@ -101,4 +111,6 @@ if __name__ == "__main__":
     #d = date.today()-timedelta(days=3)
     #print(getTrades(datetime(d.year, d.month, d.day)))
     #print(getMemberCode("Abdnor, James"))
-    print(getTrades(datetime(2023, 1, 1), member="Blumenauer, Earl"))
+    print("trades made by Earl Blumenauer since Jan 1, 2023: ")
+    for t in getTrades(datetime(2023, 1, 1), member="Blumenauer, Earl"):
+        print(t.tick, t.saleType, t.delay)
