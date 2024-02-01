@@ -2,7 +2,6 @@
 #By: Sam Schmitz
 #contains the trade class
 
-from sb.stockChecker import stock_sector
 import datetime
 import yfinance as yf
 
@@ -11,15 +10,16 @@ class trade:
 	def __init__(self, tick, saleType, dateBought, dateDis, member):
 		self.tick = tick
 		self.yf = yf.Ticker(self.tick)
-		print(self.yf.history())
 		self.saleType = saleType
 		self.dateB = dateBought	#date bought
 		self.priceB = self.pPrice(self.dateB)
 		self.dateD = dateDis	#date disclosed
 		self.priceD = self.pPrice(self.dateD)
 		self.member = member
-		self.sector = stock_sector(self.tick)
 		self.delay = int((self.dateD - self.dateB).days)
+		info = self.yf.get_info()
+		self.sector = info['sector']
+		self.industry = info['industry']
 
 	def cPrice(self):
 		data =  self.yf.history()
@@ -30,7 +30,6 @@ class trade:
 		d2 = d + datetime.timedelta(days=1)
 		end = d2.strftime("%Y-%m-%d")
 		df = self.yf.history(start=start, end=end)
-		#print(df)
 		return round(df['Open'][0], 2)
 	
 if __name__ == "__main__":
