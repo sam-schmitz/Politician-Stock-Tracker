@@ -2,24 +2,38 @@
 #By: Sam Schmitz
 #contains the trade class
 
-from stockChecker import cPrice, pPrice, stock_sector
+from sb.stockChecker import stock_sector
 import datetime
+import yfinance as yf
 
 class trade:
 
 	def __init__(self, tick, saleType, dateBought, dateDis, member):
 		self.tick = tick
+		self.yf = yf.Ticker(self.tick)
+		print(self.yf.history())
 		self.saleType = saleType
 		self.dateB = dateBought	#date bought
-		self.priceB = pPrice(self.tick, self.dateB)
+		self.priceB = self.pPrice(self.dateB)
 		self.dateD = dateDis	#date disclosed
-		self.priceD = pPrice(self.tick, self.dateD)
+		self.priceD = self.pPrice(self.dateD)
 		self.member = member
 		self.sector = stock_sector(self.tick)
 		self.delay = int((self.dateD - self.dateB).days)
 
 	def cPrice(self):
-		return cPrice(self.tick)
+		data =  self.yf.history()
+		return round(data["Close"][-1], 2)
 
 	def pPrice(self, d):
-		return pPrice(self.tick, d)
+		start = d.strftime("%Y-%m-%d")
+		d2 = d + datetime.timedelta(days=1)
+		end = d2.strftime("%Y-%m-%d")
+		df = self.yf.history(start=start, end=end)
+		#print(df)
+		return round(df['Open'][0], 2)
+	
+if __name__ == "__main__":
+	test = trade('MSFT', 'BUY', datetime.datetime(2023, 1, 5), datetime.datetime(2023, 1, 3), 'Biden, Joe')
+	print("cPrice:", test.cPrice())
+	print("pPrice: ", test.pPrice(datetime.datetime(2024, 1, 2)))
