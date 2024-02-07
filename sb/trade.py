@@ -18,6 +18,7 @@ class trade:
 		self.member = member
 		self.delay = int((self.dateD - self.dateB).days)
 		info = self.yf.get_info()
+		#problems with ETFs
 		self.sector = info['sector']
 		self.industry = info['industry']
 

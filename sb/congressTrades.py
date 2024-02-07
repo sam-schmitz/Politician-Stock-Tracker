@@ -6,13 +6,11 @@ from datetime import datetime
 from datetime import date
 from datetime import timedelta
 from selenium import webdriver
-import chromedriver_autoinstaller
+#import chromedriver_autoinstaller
 from selenium.webdriver.common.by import By
 #import chromedriver_binary
 from chromedriver_py import binary_path
 from time import sleep
-import requests
-from bs4 import BeautifulSoup
 from trade import trade
 
 HEADER = {'Connection': 'keep-alive',
@@ -58,6 +56,7 @@ def _getPageInfo(dateStop, pageNum, member=None):
     #print(p_element.text)
     pageInfo = []
     stop = False
+    print("dateStop: ", dateStop)
     for i in range(1, 51):
         #checkdate
         dateDis = driver.find_element(By.XPATH, f"//div[@class='trade-table-scroll-wrapper']/table/tbody/tr[{i}]/td[3]").text.replace("\n", " ")
@@ -75,6 +74,10 @@ def _getPageInfo(dateStop, pageNum, member=None):
                 pageInfo.append(trade(tick[1], saleType, dateBought, dateDis, member[0]))
             except AttributeError:
                 print(tick[1])
+            except IndexError:
+                print(tick[1])
+            except KeyError:
+                print("Likely an ETF: ", tick[1])
         #print("row data:", tick[1], saleType, dateBought, dateDis, member)
     return stop, pageInfo
 
@@ -108,9 +111,10 @@ def getMemberCode(member):
 
 
 if __name__ == "__main__":
-    #d = date.today()-timedelta(days=3)
-    #print(getTrades(datetime(d.year, d.month, d.day)))
-    #print(getMemberCode("Abdnor, James"))
-    print("trades made by Earl Blumenauer since Jan 1, 2023: ")
-    for t in getTrades(datetime(2023, 1, 1), member="Blumenauer, Earl"):
+    d = date.today()-timedelta(days=3)
+    for t in getTrades(datetime(d.year, d.month, d.day)):
         print(t.tick, t.saleType, t.delay)
+    #print(getMemberCode("Abdnor, James"))
+    #print("trades made by Earl Blumenauer since Jan 1, 2023: ")
+    #for t in getTrades(datetime(2023, 1, 1), member="Blumenauer, Earl"):
+        #print(t.tick, t.saleType, t.delay)
