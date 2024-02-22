@@ -7,7 +7,7 @@ import sqlite3
 class stockBotDatabase:
     
     def __init__(self):
-        self.connection = sqlite3.connect('sql.db')
+        self.connection = sqlite3.connect('sbDatabase.db')
         self.cursor = self.connection.cursor()
         print('DB Init')
         
