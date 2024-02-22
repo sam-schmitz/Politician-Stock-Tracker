@@ -13,6 +13,7 @@ class stockBotDatabase:
         
     def query(self, query):
         self.cursor.execute(query)
+        self.connection.commit()
         
     def fetchall(self):
         return self.cursor.fetchall()
