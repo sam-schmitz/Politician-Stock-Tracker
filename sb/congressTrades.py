@@ -22,8 +22,8 @@ HEADER = {'Connection': 'keep-alive',
 def getTrades(date, member=None):
     """Go to capitaltrades.com/trades and find all trades recorded after a certain date
     inclusive for date (date tracked at timezone 0)
-    date = (YYYY-MM-DD) or Unix date
-    returns [tick, (buy or sell), dateBought] within a list (1 list for each stock found)
+    date = (YYYY-MM-DD)
+    returns [trade] with trade being a trade obj
     """
     stockData = []
     stop = False
@@ -47,6 +47,7 @@ def _getPageInfo(dateStop, pageNum, member=None):
     """
     #chromedriver_autoinstaller.install()
     driver = webdriver.Chrome(executable_path=binary_path)
+    #to update driver pip install chromedriver-py --upgrade
     if member != None:
         driver.get(f"https://www.capitoltrades.com/trades?page={str(pageNum)}&pageSize=50&politician={member}")
     else:
@@ -63,6 +64,7 @@ def _getPageInfo(dateStop, pageNum, member=None):
         dateDis = abrev_to_unix(dateDis)
         if dateDis < dateStop:
             stop = True
+            print(dateDis, dateStop)
             break
         tick = driver.find_element(By.XPATH, f"//table/tbody/tr[{i}]/td[2]").text.replace(":US", "").split("\n")    #the tick is formated as [full tick name, TICK]
         saleType = driver.find_element(By.XPATH, f"//table/tbody/tr[{i}]/td[7]").text
@@ -80,6 +82,52 @@ def _getPageInfo(dateStop, pageNum, member=None):
                 print("Likely an ETF: ", tick[1])
         #print("row data:", tick[1], saleType, dateBought, dateDis, member)
     return stop, pageInfo
+
+def get_trades_d_to_d(d1, d2, member=None):
+    stockData = []
+    stop = False
+    pageNum = 0
+    mem = None
+    if member is not None:
+        mem = getMemberCode(member)
+    print("date start: ", d1)
+    while stop != True:
+        pageNum += 1
+        stop = _get_page_info_start(d1, pageNum, member=mem)
+    stop = False
+    pageNum -= 1
+    print("Ticks not found: ")
+    while stop != True:
+        pageNum += 1
+        stop, data = _getPageInfo(d2, pageNum, member=mem)
+        stockData += data
+    t = 0
+    while True:
+        if stockData[t].dateD <= d1:
+            break
+        print(stockData[t].dateD)
+        stockData.pop(t)
+        t += 1
+    return stockData
+
+def _get_page_info_start(dateStart, pageNum, member=None):
+    driver = webdriver.Chrome(executable_path=binary_path)
+    if member != None:
+        driver.get(f"https://www.capitoltrades.com/trades?page={str(pageNum)}&pageSize=50&politician={member}")
+    else:
+        driver.get(f"https://www.capitoltrades.com/trades?page={str(pageNum)}&pageSize=50")
+    sleep(2)
+    
+    stop = False
+    for i in range(1, 51):
+        #checkdate
+        dateDis = driver.find_element(By.XPATH, f"//div[@class='trade-table-scroll-wrapper']/table/tbody/tr[{i}]/td[3]").text.replace("\n", " ")
+        dateDis = abrev_to_unix(dateDis)
+        if dateDis <= dateStart:
+            stop = True
+            print("stop found: ", dateDis)
+            break
+    return stop
 
 def abrev_to_unix(abrev):
     """turns the abreviated version of a date(ex:2022 13 Oct) into a datetime form
@@ -112,9 +160,12 @@ def getMemberCode(member):
 
 if __name__ == "__main__":
     d = date.today()-timedelta(days=3)
-    for t in getTrades(datetime(d.year, d.month, d.day)):
-        print(t.tick, t.saleType, t.delay)
+    #for t in getTrades(datetime(d.year, d.month, d.day)):
+        #print(t.tick, t.saleType, t.delay)
     #print(getMemberCode("Abdnor, James"))
     #print("trades made by Earl Blumenauer since Jan 1, 2023: ")
     #for t in getTrades(datetime(2023, 1, 1), member="Blumenauer, Earl"):
         #print(t.tick, t.saleType, t.delay)
+    d2 = d-timedelta(days=3)
+    for t in get_trades_d_to_d(datetime(d.year, d.month, d.day), datetime(d2.year, d2.month, d2.day)):
+        print(t.tick, t.saleType, t.delay)
