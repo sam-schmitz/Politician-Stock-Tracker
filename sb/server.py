@@ -35,9 +35,8 @@ class stockBotAPI:
         query = f"SELECT * FROM trades"
         if date != None:    #add to query the date info
             pass
-        self.cursor.execute(query)
-        self.conn.commit()
-        allTrades = self.cursor.fetchall()
+        #I need the data in 0-4 to be tick, saleType, dateBought, dateDis, member
+        allTrades = self.cursor.execute(query).fetchall()
         return self._fetchall_to_trades(allTrades)
     
     def get_member_trades(self, member, date=None):
@@ -45,18 +44,15 @@ class stockBotAPI:
         query = f""
         if date != None:    #add to query the date info
             pass
-        self.cursor.execute(query)
-        self.conn.commit()
-        allTrades = self.cursor.fetchall()
+        #I need the data in 0-4 to be tick, saleType, dateBought, dateDis, member
+        allTrades = self.cursor.execute(query).fetchall()
         return self._fetchall_to_trades(allTrades)
         
     def _fetchall_to_trades(self, fetchall):
         #turns data from fetchall into a list of trade obj
         trades = []
-        for trade in fetchall:
-            pass
-            #make a trade object for each trade
-            #add it to trades
+        for t in fetchall:
+            trades.append(trade(t[0], t[1], t[2], t[3], t[4]))
         return trades
         
         
