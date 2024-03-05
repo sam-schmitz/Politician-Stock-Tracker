@@ -8,8 +8,10 @@ from trade import trade
 
 class stockBotAPI:
     
-    def __init__(self):
-        self.conn = sqlite3.connect('sbDatabase.db')
+    def __init__(self, db=None):
+        if db == None:
+            db = 'sbDatabase.db'
+        self.conn = sqlite3.connect(db)
         self.cursor = self.conn.cursor()
         print('DB Init')
         
