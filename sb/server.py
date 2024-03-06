@@ -38,20 +38,21 @@ class stockBotAPI:
         if date != None:    #add to query the date info
             pass
         #I need the data in 0-4 to be tick, saleType, dateBought, dateDis, member
-        allTrades = self.cursor.execute(query).fetchall()
-        return self._fetchall_to_trades(allTrades)
+        return self.cursor.execute(query).fetchall()
+        #return self._fetchall_to_trades(allTrades)
     
     def get_member_trades(self, member, date=None):
         #gets trades from (current, date) for a named member
         query = f""
         if date != None:    #add to query the date info
             pass
-        #I need the data in 0-4 to be tick, saleType, dateBought, dateDis, member
-        allTrades = self.cursor.execute(query).fetchall()
-        return self._fetchall_to_trades(allTrades)
+        #get all the data and I need the data in 0-4 to be tick, saleType, dateBought, dateDis, member
+        return self.cursor.execute(query).fetchall()
+        #return self._fetchall_to_trades(allTrades)
         
     def _fetchall_to_trades(self, fetchall):
         #turns data from fetchall into a list of trade obj
+        #I need the data in 0-4 to be tick, saleType, dateBought, dateDis, member
         trades = []
         for t in fetchall:
             trades.append(trade(t[0], t[1], t[2], t[3], t[4]))
