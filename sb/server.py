@@ -29,7 +29,9 @@ class stockBotAPI:
         
     def add_trade(self, trade):
         # trade is a trade obj
-        self.cursor.execute(f"INSERT INTO trades VALUES ({trade.tick})")
+        query = f"INSERT INTO trades VALUES ({trade.tick})"
+        #use brakets {} to move data from the trade obj to query str
+        self.cursor.execute(query)
         self.conn.commit()
         
     def get_all_trades(self, date=None):
@@ -37,7 +39,7 @@ class stockBotAPI:
         query = f"SELECT * FROM trades"
         if date != None:    #add to query the date info
             pass
-        #I need the data in 0-4 to be tick, saleType, dateBought, dateDis, member
+        #get all the data and I need the data in 0-4 to be tick, saleType, dateBought, dateDis, member
         return self.cursor.execute(query).fetchall()
         #return self._fetchall_to_trades(allTrades)
     
