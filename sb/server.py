@@ -34,7 +34,10 @@ class stockBotAPI:
         
     def get_all_trades(self, date=None):
         #gets trades from (current, date) for all members in the database
-        query = f"SELECT * FROM trades"
+        query = f'''SELECT s.tick, t.saleType, 
+                    t.dateBought, t.dateDistributed, t.memberID
+                    FROM stocks s
+                    INNER JOIN trades t ON s.stockID = t.stockID'''
         if date != None:    #add to query the date info
             pass
         #I need the data in 0-4 to be tick, saleType, dateBought, dateDis, member
@@ -43,7 +46,11 @@ class stockBotAPI:
     
     def get_member_trades(self, member, date=None):
         #gets trades from (current, date) for a named member
-        query = f""
+        query = f'''SELECT s.tick, t.saleType,
+                    t.dateBought, t.dateDistributed, t.memberID
+                    FROM stocks s
+                    INNER JOIN trades t ON s.stockID = t.stockID
+                    WHERE t.memberID = 'Joe Biden' '''
         if date != None:    #add to query the date info
             pass
         #I need the data in 0-4 to be tick, saleType, dateBought, dateDis, member
