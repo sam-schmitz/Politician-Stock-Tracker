@@ -5,6 +5,7 @@
 import sqlite3
 
 from trade import trade
+from datetime import datetime
 
 class stockBotAPI:
     
@@ -35,7 +36,7 @@ class stockBotAPI:
         memberInfo = self.cursor.execute(query).fetchall()
         #calculate crossover
         query = f'''INSERT INTO trades (stockID, saleType, memberID, dateBought, priceBought, dateDisclosed, priceDisclosed, Delay, Crossover) 
-                    VALUES ({"stockID"}, {trade.saleType}, {"memberID"}, {trade.dateB}, {trade.priceB}, {trade.dateD}, {trade.priceD}, {trade.delay}, {"crossover"})'''
+                    VALUES ({"stockID"}, {trade.saleType}, {"memberID"}, {trade.dateB.strftime("%m %d %Y")}, {trade.priceB}, {trade.dateD.strftime("%m %d %Y")}, {trade.priceD}, {trade.delay}, {"crossover"})'''
         #use brakets {} to move data from the trade obj to query str
         self.cursor.execute(query)
         self.conn.commit()
@@ -54,8 +55,8 @@ class stockBotAPI:
         for t in rawData:
             trades.append({"tick":t[0], 
                            'saleType':t[1], 
-                           "dateB":t[2], 
-                           'dateDis':t[3], 
+                           "dateB":datetime.strptime(t[2], '%m %d %Y'), 
+                           'dateDis':datetime.strptime(t[3], '%m %d %Y'), 
                            'member':t[4]
                            'priceB':t[5]
                            'priceD':t[6]})
@@ -76,8 +77,8 @@ class stockBotAPI:
         for t in rawData:
             trades.append({"tick":t[0], 
                            'saleType':t[1], 
-                           "dateB":t[2], 
-                           'dateDis':t[3], 
+                           "dateB":datetime.strptime(t[2], '%m %d %Y'), 
+                           'dateDis':datetime.strptime(t[3], '%m %d %Y'), 
                            'member':t[4]
                            'priceB':t[5]
                            'priceD':t[6]})
