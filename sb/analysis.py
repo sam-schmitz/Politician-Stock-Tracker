@@ -17,11 +17,9 @@ def six_months_avg_mem(mem):
     totalGainPercentD = 0
     for t in trades:
         if t[1] == "BUY":
-            cPrice = cPrice(t[0])
-            priceB = pPrice(t[2])
-            priceD = pPrice(t[3])
-            totalGainPercentB += (cPrice/priceB)/priceB
-            totalGainPercentD += (cPrice/priceD)/priceD
+            cPrice = cPrice(t['tick'])
+            totalGainPercentB += (cPrice/t['priceB'])/t['priceB']
+            totalGainPercentD += (cPrice/t['priceD'])/t['priceD']
     avgGainB = totalGainPercentB/trades.length
     avgGainD = totalGainPercentD/trades.length
     print("Average % gained: ", avgGainB)

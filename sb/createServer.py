@@ -18,6 +18,7 @@ if __name__ == "__main__":
                    TEXT)''')
     cursor.execute('''CREATE TABLE IF NOT EXISTS members
                    (memberID INTEGER PRIMARY KEY, comittees TEXT)''')
+    #need to add: Name TEXT
     cursor.execute('''CREATE TABLE IF NOT EXISTS stocks
                    (stockID INTEGER PRIMARY KEY, tick TEXT, sector TEXT,
                    industry TEXT, companyName TEXT)''')
