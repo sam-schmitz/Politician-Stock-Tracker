@@ -30,13 +30,14 @@ class stockBotAPI:
         
     def add_trade(self, trade):
         # trade is a trade obj
-        query = f'''SELECT comittees
+        """query = f'''SELECT comittees
                     FROM members
                     WHERE Name={trade.member}'''
         memberInfo = self.cursor.execute(query).fetchall()
-        #calculate crossover
-        query = f'''INSERT INTO trades (stockID, saleType, memberID, dateBought, priceBought, dateDisclosed, priceDisclosed, Delay, Crossover) 
-                    VALUES ({"stockID"}, {trade.saleType}, {"memberID"}, {trade.dateB.strftime("%m %d %Y")}, {trade.priceB}, {trade.dateD.strftime("%m %d %Y")}, {trade.priceD}, {trade.delay}, {"crossover"})'''
+        
+        #calculate crossover"""
+        query = f'''INSERT INTO trades (stockID, saleType, memberID, dateBought, priceBought, dateDisclosed, priceDisclosed, Delay) 
+                    VALUES ({"stockID"}, {trade.saleType}, {"memberID"}, {trade.dateB.strftime("%m %d %Y")}, {trade.priceB}, {trade.dateD.strftime("%m %d %Y")}, {trade.priceD}, {trade.delay})'''
         #use brakets {} to move data from the trade obj to query str
         self.cursor.execute(query)
         self.conn.commit()
