@@ -36,9 +36,15 @@ class stockBotAPI:
         memberInfo = self.cursor.execute(query).fetchall()
         
         #calculate crossover"""
+    
+        #check if stock is in the stock table
+            #if not add the stock to the table
+
         query = f'''INSERT INTO trades (stockID, saleType, memberID, dateBought, priceBought, dateDisclosed, priceDisclosed, Delay) 
                     VALUES ({"stockID"}, {trade.saleType}, {"memberID"}, {trade.dateB.strftime("%m %d %Y")}, {trade.priceB}, {trade.dateD.strftime("%m %d %Y")}, {trade.priceD}, {trade.delay})'''
+        #need to figure out how to add IDs to the query
         #use brakets {} to move data from the trade obj to query str
+
         self.cursor.execute(query)
         self.conn.commit()
         
@@ -58,8 +64,8 @@ class stockBotAPI:
                            'saleType':t[1], 
                            "dateB":datetime.strptime(t[2], '%m %d %Y'), 
                            'dateDis':datetime.strptime(t[3], '%m %d %Y'), 
-                           'member':t[4]
-                           'priceB':t[5]
+                           'member':t[4],
+                           'priceB':t[5],
                            'priceD':t[6]})
         return trades
     
@@ -81,8 +87,8 @@ class stockBotAPI:
                            'saleType':t[1], 
                            "dateB":datetime.strptime(t[2], '%m %d %Y'), 
                            'dateDis':datetime.strptime(t[3], '%m %d %Y'), 
-                           'member':t[4]
-                           'priceB':t[5]
+                           'member':t[4],
+                           'priceB':t[5],
                            'priceD':t[6]})
         return trades
         #return self._fetchall_to_trades(allTrades)

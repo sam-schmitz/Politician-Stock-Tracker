@@ -168,4 +168,4 @@ if __name__ == "__main__":
         #print(t.tick, t.saleType, t.delay)
     d2 = d-timedelta(days=3)
     for t in get_trades_d_to_d(datetime(d.year, d.month, d.day), datetime(d2.year, d2.month, d2.day)):
-        print(t.tick, t.saleType, t.delay)
+        print(t.tick, t.member, t.saleType, t.delay)

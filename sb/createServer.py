@@ -3,12 +3,14 @@
 # creates the database to be used by server.py
 
 import sqlite3
-from os import path
 
 if __name__ == "__main__":
     conn = sqlite3.connect("sbDatabase.db")
     cursor = conn.cursor()
     
+
+    cursor.execute('''DROP TABLE members; ''')
+    conn.commit()
 
     cursor.execute(''' CREATE TABLE IF NOT EXISTS trades
                    (tradeID INTEGER PRIMARY KEY, stockID INTEGER FORGEIN KEY,
@@ -22,5 +24,10 @@ if __name__ == "__main__":
                    (stockID INTEGER PRIMARY KEY, tick TEXT, sector TEXT,
                    industry TEXT, companyName TEXT)''')
     conn.commit()
+    
+    from fillDatabase import fill_members()
+    fill_members()
+    
+    
     
     print(conn.total_changes)
