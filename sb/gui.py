@@ -2,10 +2,6 @@
 # By: Sam Schmitz and Gavin Roy
 # The gui for the politician stock tracker
 
-from genericpath import samefile
-from tkinter import *
-from typing import Container
-
 from congressTrades import getTrades
 from fillDatabase import fill
 
@@ -17,6 +13,7 @@ import tkinter as tk
 from tkinter import ttk
     
 class tkinterApp(tk.Tk):
+    
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         container = tk.Frame(self)
@@ -36,6 +33,12 @@ class tkinterApp(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()
         
+    def show_tree(self):
+        pass
+    
+    def hide_tree(self):
+        pass
+        
 class StartPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -51,6 +54,7 @@ class StartPage(tk.Frame):
         button2.grid(row=2, column=1, padx=10, pady=10)
         
 class Page1(tk.Frame):
+    
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         label = ttk.Label(self, text="Page 1", font=("Verdana", 35))
@@ -64,16 +68,36 @@ class Page1(tk.Frame):
         command = lambda : controller.show_frame(Page2))
         button2.grid(row=2, column=2, padx=10, pady=10)
         
-        def getAllClicked():
-            d = date.today()-timedelta(days=3)
-            print("fill called with: ", datetime.now(), datetime(d.year, d.month, d.day))
-            #fill(datetime.now, datetime(d.year, d.month, d.day))
+        def getCurrentClicked():
+            d1 = date.today()
+            d2 = d1-timedelta(days=3)
+            print("fill called with: ", datetime(d1.year, d1.month, d1.day), datetime(d2.year, d2.month, d2.day))
+            trades = fill(datetime(d1.year, d1.month, d1.day), datetime(d2.year, d2.month, d2.day))
+            for trade in trades:
+                self.treev.insert("", 'end', text="L",
+                             values = (trade.tick, trade.saleType, trade.member))
 
-        buttonGetAll = ttk.Button(self, text="Get All", command = getAllClicked)
+        buttonGetAll = ttk.Button(self, text="Get Current", command = getCurrentClicked)
         buttonGetAll.grid(row=1, column=4, padx=10, pady=10)
-                
         
+        self.treev = ttk.Treeview(self, selectmode='browse')
+        self.treev.grid(row=3, column=4)
+        #treev.pack(side='right')
+        verscrlbar = ttk.Scrollbar(self, orient="vertical", command=self.treev.yview)
+        #verscrlbar.pack(side='right', fill='x')
+        self.treev.configure(xscrollcommand = verscrlbar.set)
+        self.treev["columns"] = ("1", "2", "3")
+        self.treev['show'] = 'headings'
+        self.treev.column("1", width=90, anchor='c')
+        self.treev.column("2", width=90, anchor='se')
+        self.treev.column("3", width=90, anchor='se')
+        self.treev.heading("1", text="Tick")
+        self.treev.heading("2", text="Sale Type")
+        self.treev.heading("3", text="Member")
+        
+                
 class Page2(tk.Frame):
+    
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         label = ttk.Label(self, text="Page 2", font=("Verdana", 35))
@@ -90,44 +114,3 @@ class Page2(tk.Frame):
 if __name__ == "__main__":
     app = tkinterApp()
     app.mainloop()
-    """#set up the tkinter window
-    root = Tk()
-    root.title("Politician Stock Tracker")
-    root.geometry('700x400')
-    
-    
-
-    #make the first label
-    lbl = Label(root, text = "Stocks:")
-    lbl.grid(column=0, row=1)
-    #lbGetAll displays the results of getAll
-    lblGetAll = Label(root, text="")
-    lblGetAll.grid(column=1, row=1)
-    
-    def getAllClicked():    #allows the getAll button to grab all the trades from the last 3 days
-        d = date.today()-timedelta(days=3)
-        ticks = []
-        for t in getTrades(datetime(d.year, d.month, d.day)):
-            ticks.append(t.tick)
-        lblGetAll.configure(text = str(ticks))
-    # creates the button for getAll
-    getAllbtn = Button(root, text="Get recent trades", fg = "red", command=getAllClicked)
-    getAllbtn.grid(column=0, row=0)
-    
-    def getOneClicked():    # action for getOne
-        d = date.today()-timedelta(days=180)    # checks the past ~6 months
-        ticks = []
-        for t in getTrades(datetime(d.year, d.month, d.day), entryGetOne.get()):
-            ticks.append(t.tick)
-            lblGetOne.configure(text = str(ticks))
-    # entryGetOne holds the name to be scraped
-    entryGetOne = Entry(root, width=20)
-    getOnebtn = Button(root, text="Get recent trades for member", fg="red", command=getOneClicked)
-    entryGetOne.grid(column=0, row=2)
-    getOnebtn.grid(column=1, row=2)
-    # lblGetOne displays the results of getOne
-    lblGetOne = Label(root, text="")
-    lblGetOne.grid(column=0, row=3)
-
-    root.mainloop() # runs root"""
-        

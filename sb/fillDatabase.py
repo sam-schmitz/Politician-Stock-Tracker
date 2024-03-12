@@ -10,10 +10,11 @@ from server import stockBotAPI
 
 def fill(d1, d2):
     trades = get_trades_d_to_d(d1, d2)
-    sba = stockBotAPI()
+    """sba = stockBotAPI()
     for t in trades:
         sba.add_trade(trade=t)
-    sba.close()
+    sba.close()"""
+    return trades
         
 def fill_members():
     #Only adds member names 
@@ -53,10 +54,11 @@ def fill_members():
     sba.close()
 
 if __name__ == "__main__":
-    """d1 = date(2024, 3, 5)
+    #d1 = date(2024, 3, 5)
+    d1 = date.today()
     d2 = d1 - timedelta(days=5)
     fill(datetime(d1.year, d1.month, d1.day), datetime(d2.year, d2.month, d2.day))
     #d = date.today()-timedelta(days=3)
     #fill(datetime(d.year, d.month, d.day))
-    print(d2)"""
-    fill_members()
+    print(d2)
+    #fill_members()
