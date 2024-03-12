@@ -4,6 +4,7 @@
 
 from congressTrades import getTrades
 from fillDatabase import fill
+from server import stockBotAPI
 
 from datetime import datetime
 from datetime import date
@@ -23,7 +24,7 @@ class tkinterApp(tk.Tk):
         
         self.frames = {}
         
-        for F in (StartPage, Page1, Page2):
+        for F in (StartPage, Page1, Page2, Page3):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -52,6 +53,10 @@ class StartPage(tk.Frame):
         button2 = ttk.Button(self, text="Page 2",
         command = lambda : controller.show_frame(Page2))
         button2.grid(row=2, column=1, padx=10, pady=10)
+        
+        button3 = ttk.Button(self, text="Page 3",
+        command = lambda : controller.show_frame(Page3))
+        button3.grid(row=3, column=1, padx=10, pady=10)
         
 class Page1(tk.Frame):
     
@@ -82,9 +87,7 @@ class Page1(tk.Frame):
         
         self.treev = ttk.Treeview(self, selectmode='browse')
         self.treev.grid(row=3, column=4)
-        #treev.pack(side='right')
         verscrlbar = ttk.Scrollbar(self, orient="vertical", command=self.treev.yview)
-        #verscrlbar.pack(side='right', fill='x')
         self.treev.configure(xscrollcommand = verscrlbar.set)
         self.treev["columns"] = ("1", "2", "3")
         self.treev['show'] = 'headings'
@@ -110,6 +113,37 @@ class Page2(tk.Frame):
         button2 = ttk.Button(self, text="Startpage", 
         command = lambda : controller.show_frame(StartPage))
         button2.grid(row=2, column=2, padx=10, pady=10)
+        
+class Page3(tk.Frame):
+    
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        label = ttk.Label(self, text="Page 3", font=("Verdana", 35))
+        label.grid(row=0, column=4, padx=10, pady=10)
+        
+        button1 = ttk.Button(self, text="Startpage", 
+        command = lambda : controller.show_frame(StartPage))
+        button1.grid(row=1, column=1, padx=10, pady=10)
+        
+        self.treev = ttk.Treeview(self, selectmode='browse')
+        self.treev.grid(row=3, column=4)
+        verscrlbar = ttk.Scrollbar(self, orient="vertical", command=self.treev.yview)
+        self.treev.configure(xscrollcommand = verscrlbar.set)
+        self.treev["columns"] = ("1", "2", "3")
+        self.treev['show'] = 'headings'
+        self.treev.column("1", width=90, anchor='c')
+        self.treev.column("2", width=90, anchor='se')
+        self.treev.column("3", width=90, anchor='se')
+        self.treev.heading("1", text="Tick")
+        self.treev.heading("2", text="Sale Type")
+        self.treev.heading("3", text="Member")
+        
+        self.sba = stockBotAPI()
+        self.trades = self.sba.get_all_trades()
+        for trade in self.trades:
+                self.treev.insert("", 'end', text="L",
+                             values = (trade.tick, trade.saleType, trade.member))
+        
         
 if __name__ == "__main__":
     app = tkinterApp()
