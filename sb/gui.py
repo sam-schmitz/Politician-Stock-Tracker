@@ -2,7 +2,9 @@
 # By: Sam Schmitz and Gavin Roy
 # The gui for the politician stock tracker
 
+from genericpath import samefile
 from tkinter import *
+from typing import Container
 
 from congressTrades import getTrades
 
@@ -15,6 +17,9 @@ if __name__ == "__main__":
     root = Tk()
     root.title("Politician Stock Tracker")
     root.geometry('700x400')
+    
+    
+
     #make the first label
     lbl = Label(root, text = "Stocks:")
     lbl.grid(column=0, row=1)
@@ -48,3 +53,31 @@ if __name__ == "__main__":
     lblGetOne.grid(column=0, row=3)
 
     root.mainloop() # runs root
+    
+import tkinter as tk
+from tkinter import ttk
+    
+class tkinterApp(tk.Tk):
+    def __init__(self, *args, **kwargs):
+        tk.Tk.__init__(self, *args, **kwargs)
+        container = tk.Frame(self)
+        container.pack(side="top", fill="both", expand=True)
+        container.grid_rowconfigure(0, weight=1)
+        container.gris_columnconfigure(0, weight=1)
+        
+        self.frames = {}
+        
+        for F in (StartPage, Page1, Page2):
+            frame = F(container, self)
+            self.frames[F] = frame
+            frame.grid(row=0, column=0, sticky="nsew")
+        self.show_frame(StartPage)
+        
+    def show_frame(self, cont):
+        frame = self.frames[cont]
+        frame.tkraise()
+        
+class StartPage(tk.Frame):
+    def __init__(self, parent, controller):
+        pass
+        
