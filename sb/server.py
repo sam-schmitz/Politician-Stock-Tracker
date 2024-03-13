@@ -40,21 +40,44 @@ class stockBotAPI:
         #check if stock is in the stock table
             #if not add the stock to the table
 
-        queryFetchStock = f'''SELECT stockID FROM stock
-                              WHERE tick={trade.tick}'''
+        queryFetchStock = f'''SELECT stockID FROM stocks
+                              WHERE tick="{trade.tick}"'''
         self.cursor.execute(queryFetchStock)
         stockID = self.cursor.fetchall()
+        if stockID == []:
+            self.add_stock(trade.tick)
+            self.cursor.execute(queryFetchStock)
+            stockID = self.cursor.fetchall()
+        print(stockID)
         
         queryFetchMember = f'''SELECT memberID FROM members 
-                               WHERE NAME={trade.member}'''
+                               WHERE NAME="{trade.member}"'''
+        #print(queryFetchMember)
         self.cursor.execute(queryFetchMember)
         memberID = self.cursor.fetchall()
+        if memberID == []:
+            self.add_member(trade.member)
+            self.cursor.execute(queryFetchMember)
+            memberID = self.cursor.fetchall()
+        print(memberID)
         
         query = f'''INSERT INTO trades (stockID, saleType, memberID, dateBought, priceBought, dateDisclosed, priceDisclosed, Delay) 
-                    VALUES ({stockID[0]}, {trade.saleType}, {memberID[0]}, {trade.dateB.strftime("%m %d %Y")}, {trade.priceB}, {trade.dateD.strftime("%m %d %Y")}, {trade.priceD}, {trade.delay})'''
+                    VALUES ({stockID[0][0]}, '{trade.saleType}', {memberID[0][0]}, '{trade.dateB.strftime("%m %d %Y")}', {trade.priceB}, '{trade.dateD.strftime("%m %d %Y")}', {trade.priceD}, {trade.delay})'''
+        print(query)
         #need to figure out how to add IDs to the query
         #use brakets {} to move data from the trade obj to query str
 
+        self.cursor.execute(query)
+        self.conn.commit()
+        
+    def add_stock(self, tick):
+        query = f"""INSERT INTO stocks (tick) 
+        VALUES ('{tick}')"""
+        self.cursor.execute(query)
+        self.conn.commit()
+        
+    def add_member(self, name):
+        query = f"INSERT INTO members (Name) VALUES ('{name}')"
         self.cursor.execute(query)
         self.conn.commit()
         
@@ -102,6 +125,10 @@ class stockBotAPI:
                            'priceD':t[6]})
         return trades
         #return self._fetchall_to_trades(allTrades)
+
+    def get_all_members(self):
+        #returns a list of all members in the database
+        pass
         
     def _fetchall_to_trades(self, fetchall):
         #turns data from fetchall into a list of trade obj
