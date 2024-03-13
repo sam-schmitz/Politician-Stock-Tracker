@@ -40,8 +40,16 @@ class stockBotAPI:
         #check if stock is in the stock table
             #if not add the stock to the table
 
+        queryFetchStock = ""
+        self.cursor.execute(queryFetchStock)
+        stockID = self.cursor.fetchall()
+        
+        queryFetchMember = ""
+        self.cursor.execute(queryFetchMember)
+        memberID = self.cursor.fetchall()
+        
         query = f'''INSERT INTO trades (stockID, saleType, memberID, dateBought, priceBought, dateDisclosed, priceDisclosed, Delay) 
-                    VALUES (stockID, {trade.saleType}, memberID, {trade.dateB.strftime("%m %d %Y")}, {trade.priceB}, {trade.dateD.strftime("%m %d %Y")}, {trade.priceD}, {trade.delay})'''
+                    VALUES ({stockID[0]}, {trade.saleType}, {memberID[0]}, {trade.dateB.strftime("%m %d %Y")}, {trade.priceB}, {trade.dateD.strftime("%m %d %Y")}, {trade.priceD}, {trade.delay})'''
         query2 = f'''UPDATE trades SET t.tradeID=m.memberID, s.stockID=t.tradeID
                      FROM trades t
                      INNER JOIN members m ON t.tradeID=m.memberID
