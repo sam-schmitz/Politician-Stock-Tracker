@@ -1,15 +1,20 @@
 # createServer.py
 # By: Sam Schmitz, Gavin Roy
-# creates the database to be used by server.py
+# creates/resets the database to be used by server.py
 
 import sqlite3
 
 if __name__ == "__main__":
+    #Only run if the database needs to be created or reset.
+    #Running will cause all stored data to be lost. 
     conn = sqlite3.connect("sbDatabase.db")
     cursor = conn.cursor()
     
 
     cursor.execute('''DROP TABLE members; ''')
+    conn.commit()
+    
+    cursor.execute('DROP TABLE trades; ''')
     conn.commit()
 
     cursor.execute(''' CREATE TABLE IF NOT EXISTS trades
@@ -17,7 +22,7 @@ if __name__ == "__main__":
                    saleType TEXT, memberID INTEGER FORGEIN KEY,
                    dateBought TEXT, priceBought INTEGER, dateDisclosed
                    TEXT, priceDisclosed INTEGER, Delay INTEGER, Crossover
-                   TEXT)''')
+                   TEXT, size INTEGER)''')
     cursor.execute('''CREATE TABLE IF NOT EXISTS members
                    (memberID INTEGER PRIMARY KEY, comittees TEXT, Name TEXT)''')
     cursor.execute('''CREATE TABLE IF NOT EXISTS stocks
@@ -25,7 +30,7 @@ if __name__ == "__main__":
                    industry TEXT, companyName TEXT)''')
     conn.commit()
     
-    from fillDatabase import fill_members()
+    from fillDatabase import fill_members
     fill_members()
     
     

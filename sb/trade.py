@@ -7,7 +7,7 @@ import yfinance as yf
 
 class trade:
 
-	def __init__(self, tick, saleType, dateBought, dateDis, member):
+	def __init__(self, tick, saleType, dateBought, dateDis, member, size):
 		self.tick = tick
 		self.yf = yf.Ticker(self.tick)
 		self.saleType = saleType
@@ -21,6 +21,7 @@ class trade:
 		#problems with ETFs
 		self.sector = info['sector']
 		self.industry = info['industry']
+		self.size = size	#1->1K-15K 2->15K-50K 3->50K-250K 4->250K-500K 5->500K-1M
 
 	def cPrice(self):
 		data =  self.yf.history()

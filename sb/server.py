@@ -42,27 +42,21 @@ class stockBotAPI:
 
         queryFetchStock = f'''SELECT stockID FROM stocks
                               WHERE tick="{trade.tick}"'''
-        self.cursor.execute(queryFetchStock)
-        stockID = self.cursor.fetchall()
+        stockID = self.cursor.execute(queryFetchStock).fetchall()
         if stockID == []:
             self.add_stock(trade.tick)
-            self.cursor.execute(queryFetchStock)
-            stockID = self.cursor.fetchall()
-        print(stockID)
+            stockID = self.cursor.execute(queryFetchStock).fetchall()
         
         queryFetchMember = f'''SELECT memberID FROM members 
                                WHERE NAME="{trade.member}"'''
         #print(queryFetchMember)
-        self.cursor.execute(queryFetchMember)
-        memberID = self.cursor.fetchall()
+        memberID = self.cursor.execute(queryFetchMember).fetchall()
         if memberID == []:
             self.add_member(trade.member)
-            self.cursor.execute(queryFetchMember)
-            memberID = self.cursor.fetchall()
-        print(memberID)
+            memberID = self.cursor.execute(queryFetchMember).fetchall()
         
-        query = f'''INSERT INTO trades (stockID, saleType, memberID, dateBought, priceBought, dateDisclosed, priceDisclosed, Delay) 
-                    VALUES ({stockID[0][0]}, '{trade.saleType}', {memberID[0][0]}, '{trade.dateB.strftime("%m %d %Y")}', {trade.priceB}, '{trade.dateD.strftime("%m %d %Y")}', {trade.priceD}, {trade.delay})'''
+        query = f'''INSERT INTO trades (stockID, saleType, memberID, dateBought, priceBought, dateDisclosed, priceDisclosed, Delay, size) 
+                    VALUES ({stockID[0][0]}, '{trade.saleType}', {memberID[0][0]}, '{trade.dateB.strftime("%m %d %Y")}', {trade.priceB}, '{trade.dateD.strftime("%m %d %Y")}', {trade.priceD}, {trade.delay}, {trade.size})'''
         print(query)
         #need to figure out how to add IDs to the query
         #use brakets {} to move data from the trade obj to query str
@@ -84,12 +78,11 @@ class stockBotAPI:
     def get_all_trades(self, date=None):
         #gets trades from (current, date) for all members in the database
         query = f'''SELECT s.tick, t.saleType, 
-                    t.dateBought, t.dateDisclosed, t.memberID, t.priceBought, t.priceDisclosed
+                    t.dateBought, t.dateDisclosed, t.memberID, t.priceBought, t.priceDisclosed, t.size
                     FROM stocks s
                     INNER JOIN trades t ON s.stockID = t.stockID'''
         if date != None:    #add to query the date info
             pass
-        #can I get all of the data?
         rawData = self.cursor.execute(query).fetchall()
         trades = []
         for t in rawData:
@@ -99,13 +92,14 @@ class stockBotAPI:
                            'dateDis':datetime.strptime(t[3], '%m %d %Y'), 
                            'member':t[4],
                            'priceB':t[5],
-                           'priceD':t[6]})
+                           'priceD':t[6],
+                           'size':t[7]})
         return trades
     
     def get_member_trades(self, member, date=None):
         #gets trades from (current, date) for a named member
         query = f'''SELECT s.tick, t.saleType,
-                    t.dateBought, t.dateDisclosed, t.memberID, t.priceBought, t.priceDisclosed
+                    t.dateBought, t.dateDisclosed, t.memberID, t.priceBought, t.priceDisclosed, t.size
                     FROM stocks s
                     INNER JOIN trades t ON s.stockID = t.stockID
                     INNER JOIN members m ON t.memberID = m.memberID
@@ -122,13 +116,20 @@ class stockBotAPI:
                            'dateDis':datetime.strptime(t[3], '%m %d %Y'), 
                            'member':t[4],
                            'priceB':t[5],
-                           'priceD':t[6]})
+                           'priceD':t[6],
+                           'size':t[7]})
         return trades
         #return self._fetchall_to_trades(allTrades)
 
     def get_all_members(self):
         #returns a list of all members in the database
-        pass
+        query = f"""SELECT Name 
+        FROM members"""
+        rawData = self.cursor.execute(query).fetchall()
+        members = []
+        for t in rawData:
+            members.append(t[0])
+        return members
         
     def _fetchall_to_trades(self, fetchall):
         #turns data from fetchall into a list of trade obj
