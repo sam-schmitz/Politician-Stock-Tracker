@@ -72,7 +72,6 @@ def _getPageInfo(dateStop, pageNum, member=None):
         dateBought = abrev_to_unix(dateBought)
         member = driver.find_element(By.XPATH, f"//table/tbody/tr[{i}]/td[1]").text.split("\n")
         size = driver.find_element(By.XPATH, f"//table/tbody/tr[{i}]/td[8]").text
-        print(size)
         size = _range_to_size(size)
         if tick[1] != "N/A":
             try:
@@ -133,15 +132,22 @@ def _get_page_info_start(dateStart, pageNum, member=None):
     return stop
 
 def _range_to_size(r):
+    print(r)
     find = r.find("K")
-    r = r[:find]
-    ranges = {"1" : 1,
+    r2 = r[:find]
+    if len(r2) > 3:
+        find = r.find("M")
+        r2 = r[:find+1]
+    ranges = {"< 1": 0,
+              "1" : 1,
               "15": 2,
               "50": 3,
               "100": 4,
               "250": 5,
-              "500": 6}
-    return ranges[r]
+              "500": 6,
+              "1M": 7,
+              "5M": 8}
+    return ranges[r2]
 
 def abrev_to_unix(abrev):
     """turns the abreviated version of a date(ex:2022 13 Oct) into a datetime form

@@ -54,8 +54,8 @@ def fill_members():
     sba.close()
 
 if __name__ == "__main__":
-    #d1 = date(2024, 3, 5)
-    d1 = date.today()
+    d1 = date(2024, 3, 1)
+    #d1 = date.today()
     d2 = d1 - timedelta(days=3)
     data = fill(datetime(d1.year, d1.month, d1.day), datetime(d2.year, d2.month, d2.day))
     for trade in data:
