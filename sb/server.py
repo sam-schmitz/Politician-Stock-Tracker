@@ -41,7 +41,7 @@ class stockBotAPI:
             #if not add the stock to the table
 
         query = f'''INSERT INTO trades (stockID, saleType, memberID, dateBought, priceBought, dateDisclosed, priceDisclosed, Delay) 
-                    VALUES ({"stockID"}, {trade.saleType}, {"memberID"}, {trade.dateB.strftime("%m %d %Y")}, {trade.priceB}, {trade.dateD.strftime("%m %d %Y")}, {trade.priceD}, {trade.delay})'''
+                    VALUES (stockID, {trade.saleType}, memberID, {trade.dateB.strftime("%m %d %Y")}, {trade.priceB}, {trade.dateD.strftime("%m %d %Y")}, {trade.priceD}, {trade.delay})'''
         #need to figure out how to add IDs to the query
         #use brakets {} to move data from the trade obj to query str
 
@@ -76,7 +76,7 @@ class stockBotAPI:
                     FROM stocks s
                     INNER JOIN trades t ON s.stockID = t.stockID
                     INNER JOIN members m ON t.memberID = m.memberID
-                    WHERE m.Name = 'Joe Biden' '''
+                    WHERE m.Name = {trade.member} '''
         if date != None:    #add to query the date info
             pass
         #I need the priceBought and priceDisclosed
