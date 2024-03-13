@@ -42,10 +42,16 @@ class stockBotAPI:
 
         query = f'''INSERT INTO trades (stockID, saleType, memberID, dateBought, priceBought, dateDisclosed, priceDisclosed, Delay) 
                     VALUES (stockID, {trade.saleType}, memberID, {trade.dateB.strftime("%m %d %Y")}, {trade.priceB}, {trade.dateD.strftime("%m %d %Y")}, {trade.priceD}, {trade.delay})'''
+        query2 = f'''UPDATE trades SET t.tradeID=m.memberID, s.stockID=t.tradeID
+                     FROM trades t
+                     INNER JOIN members m ON t.tradeID=m.memberID
+                     INNER JOIN stocks s ON t.tradeID=s.memberID'''
         #need to figure out how to add IDs to the query
         #use brakets {} to move data from the trade obj to query str
+        #query2 might match the corresponding data of stock and member tables
 
         self.cursor.execute(query)
+        self.cursor.execute(query2)
         self.conn.commit()
         
     def get_all_trades(self, date=None):
