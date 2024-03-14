@@ -52,7 +52,7 @@ def analyze_six_months_mem(mem):
     print("% gain overall: ", (totalGainB/totalInvested)*100 )
     print("% gain after disclosure: ", (totalGainD/totalInvested)*100)
     print(f"Biggest Earner: {biggestEarner['tick']} ${sizeToEstAmt[biggestEarner['size']]} {biggestEarner['member']} {biggestEarner['dateB']}'")
-    return avgGainB, avgGainD
+    return avgGainB, avgGainD, totalInvested
 
 def analyze_all():
     api = stockBotAPI()
@@ -95,7 +95,7 @@ def analyze_all():
     print("% gain overall: ", (totalGainB/totalInvested)*100 )
     print("% gain after disclosure: ", (totalGainD/totalInvested)*100)
     print(f"Biggest Earner: {biggestEarner['tick']} ${sizeToEstAmt[biggestEarner['size']]} {biggestEarner['member']} {biggestEarner['dateB']}'")
-    return avgGainB, avgGainD
+    return avgGainB, avgGainD, totalInvested
     
 if __name__ == "__main__":
     analyze_all()
