@@ -103,7 +103,7 @@ class stockBotAPI:
                     FROM stocks s
                     INNER JOIN trades t ON s.stockID = t.stockID
                     INNER JOIN members m ON t.memberID = m.memberID
-                    WHERE m.Name = {trade.member} '''
+                    WHERE m.Name = {member} '''
         if date != None:    #add to query the date info
             pass
         #I need the priceBought and priceDisclosed

@@ -142,7 +142,7 @@ class Page3(tk.Frame):
         self.trades = self.sba.get_all_trades()
         for trade in self.trades:
                 self.treev.insert("", 'end', text="L",
-                             values = (trade.tick, trade.saleType, trade.member))
+                             values = (trade["tick"], trade["saleType"], trade["member"]))
         
         
 if __name__ == "__main__":

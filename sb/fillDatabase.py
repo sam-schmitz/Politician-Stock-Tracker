@@ -54,6 +54,7 @@ def fill_members():
     sba.close()
 
 if __name__ == "__main__":
+    #filled with 3, 13 - 2, 14
     d1 = date(2024, 2, 13)
     #d1 = date.today()
     d2 = d1 - timedelta(days=3)
