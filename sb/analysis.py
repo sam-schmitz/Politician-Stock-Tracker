@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, date
 from server import stockBotAPI
 from stockChecker import cPrice
 
-def six_months_avg_mem(mem):
+def analyze_six_months_mem(mem):
     #calculates the average percent the given member has made
         #both since they made the trade and since they disclosed it
     api = stockBotAPI()

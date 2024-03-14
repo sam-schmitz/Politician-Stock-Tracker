@@ -5,13 +5,14 @@
 from congressTrades import getTrades
 from fillDatabase import fill
 from server import stockBotAPI
+from analysis import analyze_six_months_mem
 
 from datetime import datetime
 from datetime import date
 from datetime import timedelta
     
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
     
 class tkinterApp(tk.Tk):
     
@@ -113,6 +114,29 @@ class Page2(tk.Frame):
         button2 = ttk.Button(self, text="Startpage", 
         command = lambda : controller.show_frame(StartPage))
         button2.grid(row=2, column=2, padx=10, pady=10)
+        
+        def analyze_selection():
+            selection = combo.get()
+            avgGainB, avgGainD = analyze_six_months_mem(selection)
+            messagebox.showinfo(
+                message=f"The average gain from trades for {selection} is: {avgGainB}\n The average gain after disclosure is: {avgGainD}",
+                title="Selection")
+
+        buttonAnalyze = ttk.Button(self, text="Display Selection",
+                            command=analyze_selection)
+        buttonAnalyze.grid(row=3, column=2, padx=10, pady=10)
+        
+        sba = stockBotAPI()
+        members = sba.get_all_members()
+        sba.close()
+
+        combo = ttk.Combobox(
+            self, 
+            state="readonly",
+            values=members)
+        combo.grid(row=3, column=1, padx=10, pady=10)
+        
+        
         
 class Page3(tk.Frame):
     
