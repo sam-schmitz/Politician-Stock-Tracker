@@ -132,7 +132,6 @@ def _get_page_info_start(dateStart, pageNum, member=None):
     return stop
 
 def _range_to_size(r):
-    print(r)
     find = r.find("K")
     r2 = r[:find]
     if len(r2) > 3:
