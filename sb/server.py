@@ -78,9 +78,10 @@ class stockBotAPI:
     def get_all_trades(self, date=None):
         #gets trades from (current, date) for all members in the database
         query = f'''SELECT s.tick, t.saleType, 
-                    t.dateBought, t.dateDisclosed, t.memberID, t.priceBought, t.priceDisclosed, t.size
+                    t.dateBought, t.dateDisclosed, m.Name, t.priceBought, t.priceDisclosed, t.size
                     FROM stocks s
-                    INNER JOIN trades t ON s.stockID = t.stockID'''
+                    INNER JOIN trades t ON s.stockID = t.stockID
+                    INNER JOIN members m ON t.memberID = m.memberID'''
         if date != None:    #add to query the date info
             pass
         rawData = self.cursor.execute(query).fetchall()
@@ -99,11 +100,11 @@ class stockBotAPI:
     def get_member_trades(self, member, date=None):
         #gets trades from (current, date) for a named member
         query = f'''SELECT s.tick, t.saleType,
-                    t.dateBought, t.dateDisclosed, t.memberID, t.priceBought, t.priceDisclosed, t.size
+                    t.dateBought, t.dateDisclosed, m.Name, t.priceBought, t.priceDisclosed, t.size
                     FROM stocks s
                     INNER JOIN trades t ON s.stockID = t.stockID
                     INNER JOIN members m ON t.memberID = m.memberID
-                    WHERE m.Name = {member} '''
+                    WHERE m.Name = {member}'''
         if date != None:    #add to query the date info
             pass
         #I need the priceBought and priceDisclosed
