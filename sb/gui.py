@@ -59,7 +59,7 @@ class StartPage(tk.Frame):
         command = lambda : controller.show_frame(Page3))
         button3.grid(row=3, column=1, padx=10, pady=10)
         
-class Page1(tk.Frame):
+class Page1(tk.Frame):  #scrapes for new data
     
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -100,7 +100,7 @@ class Page1(tk.Frame):
         self.treev.heading("3", text="Member")
         
                 
-class Page2(tk.Frame):
+class Page2(tk.Frame):  #data analysis page
     
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -117,14 +117,19 @@ class Page2(tk.Frame):
         
         def analyze_selection():
             selection = combo.get()
-            avgGainB, avgGainD = analyze_six_months_mem(selection)
+            date = dateSelector.get()
+            dateConverter = {"1 Day" : date.today()-timedelta(days=1),
+                             "1 Month" : date.today()-timedelta(days=30),
+                             "6 Months": date.today()-timedelta(days=180)}
+            date = dateConverter[date]
+            avgGainB, avgGainD = analyze_six_months_mem(selection, date)
             messagebox.showinfo(
                 message=f"The average gain from trades for {selection} is: {avgGainB}\n The average gain after disclosure is: {avgGainD}",
                 title="Selection")
 
         buttonAnalyze = ttk.Button(self, text="Display Selection",
                             command=analyze_selection)
-        buttonAnalyze.grid(row=3, column=2, padx=10, pady=10)
+        buttonAnalyze.grid(row=3, column=3, padx=10, pady=10)
         
         sba = stockBotAPI()
         members = sba.get_all_members()
@@ -136,9 +141,15 @@ class Page2(tk.Frame):
             values=members)
         combo.grid(row=3, column=1, padx=10, pady=10)
         
+        dateOptions = ["1 Day", "1 Month", "6 Months"]
+        dateSelector = ttk.Combobox(self,
+                                    state="readonly",
+                                    values=dateOptions)
+        dateSelector.grid(row=3, column=2, padx=10, pady=10)
         
         
-class Page3(tk.Frame):
+        
+class Page3(tk.Frame):  #displays trades
     
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)

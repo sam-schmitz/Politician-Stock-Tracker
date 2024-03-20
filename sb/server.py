@@ -99,18 +99,21 @@ class stockBotAPI:
                            'size':t[7]})
         return trades
     
-    def get_member_trades(self, trade, date=None):
+    def get_member_trades(self, member, date=None):
         #gets trades from (current, date) for a named member
         query = f'''SELECT s.tick, t.saleType,
                     t.dateBought, t.dateDisclosed, m.Name, t.priceBought, t.priceDisclosed, t.size
                     FROM stocks s
                     INNER JOIN trades t ON s.stockID = t.stockID
                     INNER JOIN members m ON t.memberID = m.memberID
-                    WHERE m.Name = {trade.member}'''
-        if date != None: f'''SELECT t.dateBought, t.dateDistributed FROM trades t
+                    WHERE m.Name = "{member}"
+'''
+        if date != None: 
+            query += f" AND t.dateBought > '{date.strftime('%m %d %Y')}'"
+            """f'''SELECT t.dateBought, t.dateDistributed FROM trades t
                              WHERE t.dateBought = "{trade.dateB}",
-                             t.dateDistributed = "{trade.dateD}"''' #queries date info
-        pass
+                             t.dateDistributed = "{trade.dateD}"''' #queries date info"""
+            print(query)
         #I need the priceBought and priceDisclosed
         rawData = self.cursor.execute(query).fetchall()
         trades = []

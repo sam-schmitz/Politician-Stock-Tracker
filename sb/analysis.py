@@ -3,17 +3,18 @@
 # methods for analyzing the data 
 
 from datetime import datetime, timedelta, date
+import pandas_datareader as pdr
 
 from server import stockBotAPI
 from stockChecker import cPrice
 
-def analyze_six_months_mem(mem):
+def analyze_six_months_mem(mem, date=None):
     #calculates the average percent the given member has made
         #both since they made the trade and since they disclosed it
     api = stockBotAPI()
     #d = date.today()-timedelta(days=180)
     #trades = api.get_member_trades(mem, datetime(d.year, d.month, d.day))
-    trades = api.get_member_trades(mem)
+    trades = api.get_member_trades(mem, date)
     totalGainB = 0
     totalGainD = 0
     totalInvested = 0
@@ -57,6 +58,18 @@ def analyze_six_months_mem(mem):
 def analyze_all():
     api = stockBotAPI()
     trades = api.get_all_trades()
+    
+    tickers = []
+    for t in trades:
+        tickers.append(t['tick'])
+    d1 = date.today()
+    d2 = d1 - timedelta(days=1)
+    df = pdr.DataReader(tickers, data_source='yahoo', start=f'{d2.year}-{d2.month}-{d2.day}', end=f'{d1.year}-{d1.month}-{d1.day}')
+    print(df)
+    for t in range(trades):
+        trades[t]['cPrice'] = df['close'][-1]
+        print(trades[t]['cPrice'])
+
     totalGainB = 0
     totalGainD = 0
     totalInvested = 0
@@ -74,7 +87,7 @@ def analyze_all():
     for t in trades:
         if t["saleType"] == "BUY":
             print("Buy Found: " , t['tick'], t['dateDis'])
-            cp = cPrice(t['tick'])
+            cp = t['cPrice']
             estAmt = sizeToEstAmt[t['size']]
             totalGainB += (cp - t["priceB"]) * estAmt
             gainB = (cp - t["priceD"]) * estAmt
@@ -98,7 +111,5 @@ def analyze_all():
     return avgGainB, avgGainD, totalInvested
     
 if __name__ == "__main__":
-    analyze_all()
-    #six_months_avg_mem("Tommy Tuberville")
-
-
+    #analyze_all()
+    analyze_six_months_mem("Tommy Tuberville", datetime(2024, 2, 10))
