@@ -17,11 +17,17 @@ def analyze_six_months_mem(mem, date=None):
     #d = date.today()-timedelta(days=180)
     #trades = api.get_member_trades(mem, datetime(d.year, d.month, d.day))
     trades = api.get_member_trades(mem, date)
+    if trades = []:
+        print("No trades meet the parameters")
+        return None
     return _analyze(trades)
     
 def analyze_all(date=None):
     api = stockBotAPI()
     trades = api.get_all_trades(date=date)
+    if trades = []:
+        print("No trades meet the parameters")
+        return None
     return _analyze(trades)
     
 def _analyze(trades):
