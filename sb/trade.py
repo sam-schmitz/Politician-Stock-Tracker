@@ -25,6 +25,7 @@ class trade:
 
 	def cPrice(self):
 		data =  self.yf.history()
+		print(data)
 		return round(data["Close"][-1], 2)
 
 	def pPrice(self, d):
@@ -35,6 +36,6 @@ class trade:
 		return round(df['Open'][0], 2)
 	
 if __name__ == "__main__":
-	test = trade('MSFT', 'BUY', datetime.datetime(2023, 1, 5), datetime.datetime(2023, 1, 3), 'Biden, Joe')
+	test = trade('MSFT', 'BUY', datetime.datetime(2023, 1, 5), datetime.datetime(2023, 1, 3), 'Biden, Joe', 3)
 	print("cPrice:", test.cPrice())
 	print("pPrice: ", test.pPrice(datetime.datetime(2024, 1, 2)))

@@ -75,17 +75,18 @@ class stockBotAPI:
         self.cursor.execute(query)
         self.conn.commit()
         
-    def get_all_trades(self, trade, date=None):
+    def get_all_trades(self, date=None):
         #gets trades from (current, date) for all members in the database
         query = f'''SELECT s.tick, t.saleType, 
                     t.dateBought, t.dateDisclosed, m.Name, t.priceBought, t.priceDisclosed, t.size
                     FROM stocks s
                     INNER JOIN trades t ON s.stockID = t.stockID
                     INNER JOIN members m ON t.memberID = m.memberID'''
-        if date != None: f'''SELECT t.dateBought, t.dateDisclosed FROM trades t
-                             WHERE t.dateBought = "{trade.dateB}",
-                             t.dateDisclosed = "{trade.dateD}"''' #queries date info
-        pass
+        if date != None: 
+            f'''SELECT t.dateBought, t.dateDisclosed FROM trades t
+                             WHERE t.dateBought = "{date}",
+                             t.dateDisclosed = "{date}"''' #queries date info
+            pass
         rawData = self.cursor.execute(query).fetchall()
         trades = []
         for t in rawData:
@@ -106,8 +107,7 @@ class stockBotAPI:
                     FROM stocks s
                     INNER JOIN trades t ON s.stockID = t.stockID
                     INNER JOIN members m ON t.memberID = m.memberID
-                    WHERE m.Name = "{member}"
-'''
+                    WHERE m.Name = "{member}"'''
         if date != None: 
             query += f" AND t.dateBought > '{date.strftime('%m %d %Y')}'"
             """f'''SELECT t.dateBought, t.dateDistributed FROM trades t

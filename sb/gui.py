@@ -117,12 +117,13 @@ class Page2(tk.Frame):  #data analysis page
         
         def analyze_selection():
             selection = combo.get()
-            date = dateSelector.get()
-            dateConverter = {"1 Day" : date.today()-timedelta(days=1),
+            d = dateSelector.get()
+            dateConverter = {"all" : None,
+                             "1 Day" : date.today()-timedelta(days=1),
                              "1 Month" : date.today()-timedelta(days=30),
                              "6 Months": date.today()-timedelta(days=180)}
-            date = dateConverter[date]
-            avgGainB, avgGainD = analyze_six_months_mem(selection, date)
+            d = dateConverter[d]
+            avgGainB, avgGainD = analyze_six_months_mem(selection, d)
             messagebox.showinfo(
                 message=f"The average gain from trades for {selection} is: {avgGainB}\n The average gain after disclosure is: {avgGainD}",
                 title="Selection")
@@ -133,6 +134,7 @@ class Page2(tk.Frame):  #data analysis page
         
         sba = stockBotAPI()
         members = sba.get_all_members()
+        members = ['all'] + members
         sba.close()
 
         combo = ttk.Combobox(
@@ -141,7 +143,7 @@ class Page2(tk.Frame):  #data analysis page
             values=members)
         combo.grid(row=3, column=1, padx=10, pady=10)
         
-        dateOptions = ["1 Day", "1 Month", "6 Months"]
+        dateOptions = ["all","1 Day", "1 Month", "6 Months"]
         dateSelector = ttk.Combobox(self,
                                     state="readonly",
                                     values=dateOptions)
