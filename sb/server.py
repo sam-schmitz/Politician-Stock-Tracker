@@ -56,7 +56,7 @@ class stockBotAPI:
             memberID = self.cursor.execute(queryFetchMember).fetchall()
         
         query = f'''INSERT INTO trades (stockID, saleType, memberID, dateBought, priceBought, dateDisclosed, priceDisclosed, Delay, size) 
-                    VALUES ({stockID[0][0]}, '{trade.saleType}', {memberID[0][0]}, '{trade.dateB.strftime("%m %d %Y")}', {trade.priceB}, '{trade.dateD.strftime("%m %d %Y")}', {trade.priceD}, {trade.delay}, {trade.size})'''
+                    VALUES ({stockID[0][0]}, '{trade.saleType}', {memberID[0][0]}, '{trade.dateB.strftime("%Y%m%d")}', {trade.priceB}, '{trade.dateD.strftime("%Y%m%d")}', {trade.priceD}, {trade.delay}, {trade.size})'''
         print(query)
         #need to figure out how to add IDs to the query
         #use brakets {} to move data from the trade obj to query str
@@ -83,17 +83,17 @@ class stockBotAPI:
                     INNER JOIN trades t ON s.stockID = t.stockID
                     INNER JOIN members m ON t.memberID = m.memberID'''
         if date != None: 
+            query += f" AND t.dateDisclosed > '{date.strftime('%Y%m%d')}'"
             f'''SELECT t.dateBought, t.dateDisclosed FROM trades t
                              WHERE t.dateBought = "{date}",
                              t.dateDisclosed = "{date}"''' #queries date info
-            pass
         rawData = self.cursor.execute(query).fetchall()
         trades = []
         for t in rawData:
             trades.append({"tick":t[0], 
                            'saleType':t[1], 
-                           "dateB":datetime.strptime(t[2], '%m %d %Y'), 
-                           'dateDis':datetime.strptime(t[3], '%m %d %Y'), 
+                           "dateB":datetime.strptime(str(t[2]), '%Y%m%d'), 
+                           'dateDis':datetime.strptime(str(t[3]), '%Y%m%d'), 
                            'member':t[4],
                            'priceB':t[5],
                            'priceD':t[6],
@@ -109,19 +109,18 @@ class stockBotAPI:
                     INNER JOIN members m ON t.memberID = m.memberID
                     WHERE m.Name = "{member}"'''
         if date != None: 
-            query += f" AND t.dateBought > '{date.strftime('%m %d %Y')}'"
+            query += f" AND t.dateDisclosed > {date.strftime('%Y%m%d')}"
             """f'''SELECT t.dateBought, t.dateDistributed FROM trades t
                              WHERE t.dateBought = "{trade.dateB}",
                              t.dateDistributed = "{trade.dateD}"''' #queries date info"""
             print(query)
-        #I need the priceBought and priceDisclosed
         rawData = self.cursor.execute(query).fetchall()
         trades = []
         for t in rawData:
             trades.append({"tick":t[0], 
                            'saleType':t[1], 
-                           "dateB":datetime.strptime(t[2], '%m %d %Y'), 
-                           'dateDis':datetime.strptime(t[3], '%m %d %Y'), 
+                           "dateB":datetime.strptime(str(t[2]), '%Y%m%d'), 
+                           'dateDis':datetime.strptime(str(t[3]), '%Y%m%d'), 
                            'member':t[4],
                            'priceB':t[5],
                            'priceD':t[6],

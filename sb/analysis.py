@@ -19,9 +19,9 @@ def analyze_six_months_mem(mem, date=None):
     trades = api.get_member_trades(mem, date)
     return _analyze(trades)
     
-def analyze_all():
+def analyze_all(date=None):
     api = stockBotAPI()
-    trades = api.get_all_trades()
+    trades = api.get_all_trades(date=date)
     return _analyze(trades)
     
 def _analyze(trades):
@@ -34,9 +34,7 @@ def _analyze(trades):
     print(df) 
     
     for t in range(len(trades)):
-        print(f"{t}")
         trades[t]['cPrice'] = df[('Adj Close', trades[t]['tick'])][-1]
-        print(trades[t]['cPrice'])
 
     totalGainB = 0
     totalGainD = 0
@@ -54,7 +52,7 @@ def _analyze(trades):
     biggestGain = 0
     for t in trades:
         if t["saleType"] == "BUY":
-            print("Buy Found: " , t['tick'], t['dateDis'])
+            print(f"Buy Found: Tick: {t['tick']}, DateDis {t['dateDis']}, cPrice: {t['cPrice']}")
             cp = t['cPrice']
             estAmt = sizeToEstAmt[t['size']]
             totalGainB += (cp - t["priceB"]) * estAmt
@@ -87,5 +85,5 @@ if __name__ == "__main__":
     print(df[('Adj Close', 'AAPL')])
     print("price: ")
     print(df[('Adj Close', 'AAPL')][-1])"""
-    analyze_all()
-    #analyze_six_months_mem("Tommy Tuberville", datetime(2024, 2, 10))
+    #analyze_all()
+    analyze_six_months_mem("Tommy Tuberville", datetime(2024, 3, 13))

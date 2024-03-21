@@ -20,8 +20,8 @@ if __name__ == "__main__":
     cursor.execute(''' CREATE TABLE IF NOT EXISTS trades
                    (tradeID INTEGER PRIMARY KEY, stockID INTEGER FORGEIN KEY,
                    saleType TEXT, memberID INTEGER FORGEIN KEY,
-                   dateBought TEXT, priceBought INTEGER, dateDisclosed
-                   TEXT, priceDisclosed INTEGER, Delay INTEGER, Crossover
+                   dateBought INTEGER, priceBought INTEGER, dateDisclosed
+                   INTEGER, priceDisclosed INTEGER, Delay INTEGER, Crossover
                    TEXT, size INTEGER)''')
     cursor.execute('''CREATE TABLE IF NOT EXISTS members
                    (memberID INTEGER PRIMARY KEY, comittees TEXT, Name TEXT)''')
