@@ -75,6 +75,18 @@ class stockBotAPI:
         self.cursor.execute(query)
         self.conn.commit()
         
+    def add_newest_date(self, date):    #update the date of the newest data
+        query = f'''INSERT INTO newestDate (date)
+        VALUES ({date.strftime("%Y%m%d")})'''
+        self.cursor.execute(query)
+        self.conn.commit()
+    
+    def add_oldest_date(self, date):    #update the date of the oldest data
+        query = f'''INSERT INTO oldestDate (date)
+        VALUES ({date.strftime("%Y%m%d")})'''
+        self.cursor.execute(query)
+        self.conn.commit()
+        
     def get_all_trades(self, date=None):
         #gets trades from (current, date) for all members in the database
         query = f'''SELECT s.tick, t.saleType, 
@@ -137,6 +149,12 @@ class stockBotAPI:
         for t in rawData:
             members.append(t[0])
         return members
+    
+    def get_newest_date(self):  #returns the date of the newest scraped data
+        pass
+    
+    def get_oldest_date(self):  #returns the date of the oldest scraped data
+        pass
         
     def _fetchall_to_trades(self, fetchall):
         #turns data from fetchall into a list of trade obj

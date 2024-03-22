@@ -6,16 +6,16 @@ import sqlite3
 
 if __name__ == "__main__":
     #Only run if the database needs to be created or reset.
-    #Running will cause all stored data to be lost. 
+    #Running may cause all stored data to be lost. 
     conn = sqlite3.connect("sbDatabase.db")
     cursor = conn.cursor()
     
 
-    cursor.execute('''DROP TABLE members; ''')
-    conn.commit()
+    #cursor.execute('''DROP TABLE members; ''')
+    #conn.commit()
     
-    cursor.execute('DROP TABLE trades; ''')
-    conn.commit()
+    #cursor.execute('DROP TABLE trades; ''')
+    #conn.commit()
 
     cursor.execute(''' CREATE TABLE IF NOT EXISTS trades
                    (tradeID INTEGER PRIMARY KEY, stockID INTEGER FORGEIN KEY,
@@ -28,6 +28,10 @@ if __name__ == "__main__":
     cursor.execute('''CREATE TABLE IF NOT EXISTS stocks
                    (stockID INTEGER PRIMARY KEY, tick TEXT, sector TEXT,
                    industry TEXT, companyName TEXT)''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS newestDate
+                   (date INTEGER)''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS oldestDate
+                   (date INTEGER)''')
     conn.commit()
     
     from fillDatabase import fill_members
