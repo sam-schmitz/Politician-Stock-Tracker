@@ -34,8 +34,8 @@ if __name__ == "__main__":
                    (date INTEGER)''')
     conn.commit()
     
-    from fillDatabase import fill_members
-    fill_members()
+    #from fillDatabase import fill_members
+    #fill_members()
     
     
     

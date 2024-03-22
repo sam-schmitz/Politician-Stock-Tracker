@@ -151,10 +151,12 @@ class stockBotAPI:
         return members
     
     def get_newest_date(self):  #returns the date of the newest scraped data
-        pass
+        query = f'''SELECT MAX(date) FROM newestDate ''' 
+        return datetime.strptime(str(self.cursor.execute(query).fetchone()[0]), '%Y%m%d')
     
     def get_oldest_date(self):  #returns the date of the oldest scraped data
-        pass
+        query = f'''SELECT MIN(date) FROM oldestDate ''' 
+        return datetime.strptime(str(self.cursor.execute(query).fetchone()[0]), '%Y%m%d')
         
     def _fetchall_to_trades(self, fetchall):
         #turns data from fetchall into a list of trade obj
@@ -166,6 +168,10 @@ class stockBotAPI:
 
 if __name__ == "__main__":
     api = stockBotAPI()
+    api.add_newest_date(datetime(2024, 3, 20))
+    api.add_oldest_date(datetime(2024, 3, 15))
+    print("Newest Date: ", api.get_newest_date())
+    print("Oldest Date: ", api.get_oldest_date())
     api.close()
         
         
