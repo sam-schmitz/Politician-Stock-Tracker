@@ -168,10 +168,6 @@ class stockBotAPI:
 
 if __name__ == "__main__":
     api = stockBotAPI()
-    api.add_newest_date(datetime(2024, 3, 20))
-    api.add_oldest_date(datetime(2024, 3, 15))
-    print("Newest Date: ", api.get_newest_date())
-    print("Oldest Date: ", api.get_oldest_date())
     api.close()
         
         

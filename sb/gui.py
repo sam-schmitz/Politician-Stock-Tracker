@@ -60,6 +60,23 @@ class StartPage(tk.Frame):
         command = lambda : controller.show_frame(Page3))
         button3.grid(row=2, column=3, padx=10, pady=10)
         
+        api = stockBotAPI()
+        newestDate = api.get_newest_date()
+        oldestDate = api.get_oldest_date()
+        api.close()
+
+        newestScrape1 = ttk.Label(self, text="Newest Scrape:")
+        newestScrape1.grid(row=3, column=1)
+        
+        newestScrape2 = ttk.Label(self, text=newestDate)
+        newestScrape2.grid(row=4, column=1)
+        
+        oldestScrape1 = ttk.Label(self, text="Oldest Scrape:")
+        oldestScrape1.grid(row=3, column=3)
+        
+        oldestScrape2 = ttk.Label(self, text=oldestDate)
+        oldestScrape2.grid(row=4, column=3)
+        
 class Page1(tk.Frame):  #scrapes for new data
     
     def __init__(self, parent, controller):
