@@ -122,16 +122,18 @@ class Page2(tk.Frame):  #data analysis page
     
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        rowTitle = 1
         label = ttk.Label(self, text="Analysis", font=("Verdana", 35))
-        label.grid(row=0, column=1, columnspan=3, padx=10, pady=10)
+        label.grid(row=rowTitle, column=0, columnspan=4, padx=10, pady=10)
         
         #button1 = ttk.Button(self, text="Page 1", 
         #command = lambda : controller.show_frame(Page1))
         #button1.grid(row=1, column=1, padx=10, pady=10)
         
+        rowMenu = 0
         button2 = ttk.Button(self, text="Back", 
         command = lambda : controller.show_frame(StartPage))
-        button2.grid(row=0, column=0, padx=10, pady=10)
+        button2.grid(row=rowMenu, column=0, padx=10, pady=10)
         
         def analyze_selection():
             selection = combo.get()
@@ -151,9 +153,17 @@ class Page2(tk.Frame):  #data analysis page
                     message=f"The average gain from trades for {selection} is: {analysis[0]}\n The average gain after disclosure is: {analysis[1]}",
                     title="Results")
 
+        rowAnalysisLabels = 2
+        labelMembers = ttk.Label(self, text="Member:")
+        labelMembers.grid(row=rowAnalysisLabels, column=0)
+        
+        labelDate = ttk.Label(self, text="Date:")
+        labelDate.grid(row=rowAnalysisLabels, column=1)
+
+        rowAnalysisButtons = 3
         buttonAnalyze = ttk.Button(self, text="Display Selection",
                             command=analyze_selection)
-        buttonAnalyze.grid(row=2, column=2, padx=10, pady=10)
+        buttonAnalyze.grid(row=rowAnalysisButtons, column=2, padx=10, pady=5)
         
         sba = stockBotAPI()
         members = sba.get_all_members()
@@ -164,13 +174,15 @@ class Page2(tk.Frame):  #data analysis page
             self, 
             state="readonly",
             values=members)
-        combo.grid(row=2, column=0, padx=10, pady=10)
+        combo.current(0)
+        combo.grid(row=rowAnalysisButtons, column=0, padx=10, pady=5)
         
         dateOptions = ["all","1 Day", "1 Month", "6 Months"]
         dateSelector = ttk.Combobox(self,
                                     state="readonly",
                                     values=dateOptions)
-        dateSelector.grid(row=2, column=1, padx=10, pady=10)
+        dateSelector.current(0)
+        dateSelector.grid(row=rowAnalysisButtons, column=1, padx=10, pady=5)
         
         
         
