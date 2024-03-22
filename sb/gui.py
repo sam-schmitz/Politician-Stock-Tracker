@@ -22,6 +22,7 @@ class tkinterApp(tk.Tk):
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
+        #10 x 10
         
         self.frames = {}
         
@@ -45,19 +46,19 @@ class StartPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         label = ttk.Label(self, text="Startpage", font=("Verdana", 35))
-        label.grid(row=0, column=4, padx=10, pady=10)
+        label.grid(row=0, column=0, columnspan=5, rowspan=2, padx=10, pady=10)
         
-        button1 = ttk.Button(self, text="Page 1",
-        command = lambda : controller.show_frame(Page1))
-        button1.grid(row=1, column=1, padx=10, pady=10)
+        #button1 = ttk.Button(self, text="Page 1",
+        #command = lambda : controller.show_frame(Page1))
+        #button1.grid(row=1, column=1, padx=10, pady=10)
         
-        button2 = ttk.Button(self, text="Page 2",
+        button2 = ttk.Button(self, text="Ananlysis",
         command = lambda : controller.show_frame(Page2))
         button2.grid(row=2, column=1, padx=10, pady=10)
         
-        button3 = ttk.Button(self, text="Page 3",
+        button3 = ttk.Button(self, text="Trades",
         command = lambda : controller.show_frame(Page3))
-        button3.grid(row=3, column=1, padx=10, pady=10)
+        button3.grid(row=2, column=3, padx=10, pady=10)
         
 class Page1(tk.Frame):  #scrapes for new data
     
@@ -104,16 +105,16 @@ class Page2(tk.Frame):  #data analysis page
     
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        label = ttk.Label(self, text="Page 2", font=("Verdana", 35))
-        label.grid(row=0, column=4, padx=10, pady=10)
+        label = ttk.Label(self, text="Analysis", font=("Verdana", 35))
+        label.grid(row=0, column=1, columnspan=3, padx=10, pady=10)
         
-        button1 = ttk.Button(self, text="Page 1", 
-        command = lambda : controller.show_frame(Page1))
-        button1.grid(row=1, column=1, padx=10, pady=10)
+        #button1 = ttk.Button(self, text="Page 1", 
+        #command = lambda : controller.show_frame(Page1))
+        #button1.grid(row=1, column=1, padx=10, pady=10)
         
-        button2 = ttk.Button(self, text="Startpage", 
+        button2 = ttk.Button(self, text="Back", 
         command = lambda : controller.show_frame(StartPage))
-        button2.grid(row=2, column=2, padx=10, pady=10)
+        button2.grid(row=0, column=0, padx=10, pady=10)
         
         def analyze_selection():
             selection = combo.get()
@@ -123,14 +124,14 @@ class Page2(tk.Frame):  #data analysis page
                              "1 Month" : date.today()-timedelta(days=30),
                              "6 Months": date.today()-timedelta(days=180)}
             d = dateConverter[d]
-            avgGainB, avgGainD = analyze_six_months_mem(selection, d)
+            avgGainB, avgGainD, totalInvested = analyze_six_months_mem(selection, d)
             messagebox.showinfo(
                 message=f"The average gain from trades for {selection} is: {avgGainB}\n The average gain after disclosure is: {avgGainD}",
                 title="Selection")
 
         buttonAnalyze = ttk.Button(self, text="Display Selection",
                             command=analyze_selection)
-        buttonAnalyze.grid(row=3, column=3, padx=10, pady=10)
+        buttonAnalyze.grid(row=2, column=2, padx=10, pady=10)
         
         sba = stockBotAPI()
         members = sba.get_all_members()
@@ -141,13 +142,13 @@ class Page2(tk.Frame):  #data analysis page
             self, 
             state="readonly",
             values=members)
-        combo.grid(row=3, column=1, padx=10, pady=10)
+        combo.grid(row=2, column=0, padx=10, pady=10)
         
         dateOptions = ["all","1 Day", "1 Month", "6 Months"]
         dateSelector = ttk.Combobox(self,
                                     state="readonly",
                                     values=dateOptions)
-        dateSelector.grid(row=3, column=2, padx=10, pady=10)
+        dateSelector.grid(row=2, column=1, padx=10, pady=10)
         
         
         
@@ -155,31 +156,35 @@ class Page3(tk.Frame):  #displays trades
     
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        label = ttk.Label(self, text="Page 3", font=("Verdana", 35))
-        label.grid(row=0, column=4, padx=10, pady=10)
+        label = ttk.Label(self, text="Trades", font=("Verdana", 35))
+        label.grid(row=0, column=1, padx=10, pady=10)
         
-        button1 = ttk.Button(self, text="Startpage", 
+        button1 = ttk.Button(self, text="Back", 
         command = lambda : controller.show_frame(StartPage))
-        button1.grid(row=1, column=1, padx=10, pady=10)
+        button1.grid(row=0, column=0, padx=10, pady=10)
         
         self.treev = ttk.Treeview(self, selectmode='browse')
-        self.treev.grid(row=3, column=4)
+        self.treev.grid(row=3, column=0, columnspan=2)
         verscrlbar = ttk.Scrollbar(self, orient="vertical", command=self.treev.yview)
         self.treev.configure(xscrollcommand = verscrlbar.set)
-        self.treev["columns"] = ("1", "2", "3")
+        self.treev["columns"] = ("1", "2", "3", "4", "5")
         self.treev['show'] = 'headings'
         self.treev.column("1", width=90, anchor='c')
         self.treev.column("2", width=90, anchor='se')
         self.treev.column("3", width=90, anchor='se')
+        self.treev.column("4", width=90, anchor='se')
+        self.treev.column("5", width=90, anchor='se')
         self.treev.heading("1", text="Tick")
         self.treev.heading("2", text="Sale Type")
         self.treev.heading("3", text="Member")
+        self.treev.heading("4", text="Date Disclosed")
+        self.treev.heading("5", text="Date Bought")
         
         self.sba = stockBotAPI()
         self.trades = self.sba.get_all_trades()
         for trade in self.trades:
                 self.treev.insert("", 'end', text="L",
-                             values = (trade["tick"], trade["saleType"], trade["member"]))
+                             values = (trade["tick"], trade["saleType"], trade["member"], trade['dateDis'], trade['dateB']))
         
         
 if __name__ == "__main__":

@@ -17,17 +17,17 @@ def analyze_six_months_mem(mem, date=None):
     #d = date.today()-timedelta(days=180)
     #trades = api.get_member_trades(mem, datetime(d.year, d.month, d.day))
     trades = api.get_member_trades(mem, date)
-    if trades = []:
-        print("No trades meet the parameters")
-        return None
+    #if trades = []:
+        #print("No trades meet the parameters")
+        #return None
     return _analyze(trades)
     
 def analyze_all(date=None):
     api = stockBotAPI()
     trades = api.get_all_trades(date=date)
-    if trades = []:
-        print("No trades meet the parameters")
-        return None
+    #if trades = []:
+        #print("No trades meet the parameters")
+        #return None
     return _analyze(trades)
     
 def _analyze(trades):
@@ -70,8 +70,8 @@ def _analyze(trades):
                 biggestEarner = t
                 biggestGain = gainB
                 print(f"Biggest Earner: {t['tick']} ${estAmt} {t['member']} {t['dateB']}'")
-    avgGainB = totalGainB/len(trades)
-    avgGainD = totalGainD/len(trades)
+    avgGainB = round(totalGainB/len(trades), 2)
+    avgGainD = round(totalGainD/len(trades), 2)
     print("Average proft gained per trade: ", avgGainB)
     print("Average profit gained per trade after disclosure: ", avgGainD)
     print("Total amount invested: ", totalInvested)
@@ -91,5 +91,5 @@ if __name__ == "__main__":
     print(df[('Adj Close', 'AAPL')])
     print("price: ")
     print(df[('Adj Close', 'AAPL')][-1])"""
-    #analyze_all()
-    analyze_six_months_mem("Tommy Tuberville", datetime(2024, 3, 13))
+    analyze_all()
+    #analyze_six_months_mem("Tommy Tuberville", datetime(2024, 3, 13))
