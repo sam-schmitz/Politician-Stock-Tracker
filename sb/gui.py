@@ -141,10 +141,15 @@ class Page2(tk.Frame):  #data analysis page
                              "1 Month" : date.today()-timedelta(days=30),
                              "6 Months": date.today()-timedelta(days=180)}
             d = dateConverter[d]
-            avgGainB, avgGainD, totalInvested = analyze_six_months_mem(selection, d)
-            messagebox.showinfo(
-                message=f"The average gain from trades for {selection} is: {avgGainB}\n The average gain after disclosure is: {avgGainD}",
-                title="Selection")
+            analysis = analyze_six_months_mem(selection, d)
+            if analysis == None:
+                messagebox.showinfo(
+                    message="No trades found in the timeframe",
+                    title='Results')
+            else:
+                messagebox.showinfo(
+                    message=f"The average gain from trades for {selection} is: {analysis[0]}\n The average gain after disclosure is: {analysis[1]}",
+                    title="Results")
 
         buttonAnalyze = ttk.Button(self, text="Display Selection",
                             command=analyze_selection)
