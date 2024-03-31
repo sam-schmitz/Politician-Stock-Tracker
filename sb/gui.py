@@ -233,7 +233,15 @@ class Page3(tk.Frame):  #displays trades
         for trade in self.trades:
             if self.filter_trade(trade):
                 t.append(trade)
-        print(analyze_given(t))
+        analysis = analyze_given(t)
+        if analysis == None:
+                messagebox.showinfo(
+                    message="No trades found in the timeframe",
+                    title='Results')
+            else:
+                messagebox.showinfo(
+                    message=f"The average gain from trades for {selection} is: {analysis[0]}\n The average gain after disclosure is: {analysis[1]}",
+                    title="Results")
 
     def _hide_trade(self, id):
         self.tree.detach(id)
