@@ -5,7 +5,7 @@
 from congressTrades import getTrades
 from fillDatabase import fill
 from server import stockBotAPI
-from analysis import analyze_six_months_mem
+from analysis import analyze_six_months_mem, analyze_given
 
 from datetime import datetime
 from datetime import date
@@ -190,20 +190,29 @@ class Page3(tk.Frame):  #displays trades
     
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        rowMenu = 0
+        rowTitle = 1
+        rowButtons = 2
+        rowTable = 3
         label = ttk.Label(self, text="Trades", font=("Verdana", 35))
-        label.grid(row=0, column=1, padx=10, pady=10)
+        label.grid(row=rowTitle, column=1, padx=10, pady=10)
         
         button1 = ttk.Button(self, text="Back", 
         command = lambda : controller.show_frame(StartPage))
-        button1.grid(row=0, column=0, padx=10, pady=10)
+        button1.grid(row=rowMenu, column=0, padx=10, pady=10)
         
         self._create_treeview()
+        self.treev.grid(row=rowTable, column=0, columnspan=2)
         
         self.sba = stockBotAPI()
         self.filter = {'d1' : self.sba.get_newest_date(),
                        'd2' : self.sba.get_oldest_date()}
         self.trades = self.sba.get_all_trades()
         self.display_trades()
+        
+        buttonAnalyze = ttk.Button(self, text='Analyze',
+                                   command=self.analysis)
+        buttonAnalyze.grid(row=rowButtons, column=1, padx=10, pady=10)
         
     def display_trades(self):
         self.treev.delete(*self.treev.get_children())
@@ -218,16 +227,22 @@ class Page3(tk.Frame):  #displays trades
         if trade['dateDis'] < self.filter['d2']:
             return False
         return True
+    
+    def analysis(self):
+        t = []
+        for trade in self.trades:
+            if self.filter_trade(trade):
+                t.append(trade)
+        print(analyze_given(t))
 
     def _hide_trade(self, id):
         self.tree.detach(id)
     
     def _unhide_trade(self, id):
-        self.tree.reattach(id, '', 0)
+        self.tree.reattach(id, '', 0)   #0 == position where the row is reattached to
         
     def _create_treeview(self):
         self.treev = ttk.Treeview(self, selectmode='browse')
-        self.treev.grid(row=3, column=0, columnspan=2)
         verscrlbar = ttk.Scrollbar(self, orient="vertical", command=self.treev.yview)
         self.treev.configure(xscrollcommand = verscrlbar.set)
         self.treev["columns"] = ("1", "2", "3", "4", "5")

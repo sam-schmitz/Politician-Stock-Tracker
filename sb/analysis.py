@@ -39,7 +39,7 @@ def _analyze(trades):
         tickers.append(t['tick'])
     d1 = date.today()
     
-    df = yf.download(tickers, start=d1)
+    df = yf.download(tickers, start=d1) #no data if it is a weekend
     print(df) 
     
     for t in range(len(trades)):
