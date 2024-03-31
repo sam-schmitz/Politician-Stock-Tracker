@@ -32,10 +32,17 @@ if __name__ == "__main__":
                    (date INTEGER)''')
     cursor.execute('''CREATE TABLE IF NOT EXISTS oldestDate
                    (date INTEGER)''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS committees
+                   (committeeID INTEGER PRIMARY KEY, industry TEXT, sector TEXT)''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS committeeMembers 
+                   (memberID INTEGER FORGEIN KEY, committeeID INTEGER FORGEIN KEY)''')
     conn.commit()
     
     #from fillDatabase import fill_members
     #fill_members()
+
+    #from fillDatabase import fill_committees
+    #fill_committees()
     
     
     
