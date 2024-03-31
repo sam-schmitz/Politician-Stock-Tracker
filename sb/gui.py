@@ -197,6 +197,35 @@ class Page3(tk.Frame):  #displays trades
         command = lambda : controller.show_frame(StartPage))
         button1.grid(row=0, column=0, padx=10, pady=10)
         
+        self._create_treeview()
+        
+        self.sba = stockBotAPI()
+        self.filter = {'d1' : self.sba.get_newest_date(),
+                       'd2' : self.sba.get_oldest_date()}
+        self.trades = self.sba.get_all_trades()
+        self.display_trades()
+        
+    def display_trades(self):
+        self.treev.delete(*self.treev.get_children())
+        for trade in self.trades:
+            if self.filter_trade(trade):
+                trade['id'] = self.treev.insert("", 'end', text="L",
+                        values = (trade["tick"], trade["saleType"], trade["member"], trade['dateDis'], trade['dateB']))
+        
+    def filter_trade(self, trade):
+        if trade['dateDis'] > self.filter['d1']:
+            return False
+        if trade['dateDis'] < self.filter['d2']:
+            return False
+        return True
+
+    def _hide_trade(self, id):
+        self.tree.detach(id)
+    
+    def _unhide_trade(self, id):
+        self.tree.reattach(id, '', 0)
+        
+    def _create_treeview(self):
         self.treev = ttk.Treeview(self, selectmode='browse')
         self.treev.grid(row=3, column=0, columnspan=2)
         verscrlbar = ttk.Scrollbar(self, orient="vertical", command=self.treev.yview)
@@ -213,12 +242,8 @@ class Page3(tk.Frame):  #displays trades
         self.treev.heading("3", text="Member")
         self.treev.heading("4", text="Date Disclosed")
         self.treev.heading("5", text="Date Bought")
-        
-        self.sba = stockBotAPI()
-        self.trades = self.sba.get_all_trades()
-        for trade in self.trades:
-                self.treev.insert("", 'end', text="L",
-                             values = (trade["tick"], trade["saleType"], trade["member"], trade['dateDis'], trade['dateB']))
+                
+ 
         
         
 if __name__ == "__main__":
