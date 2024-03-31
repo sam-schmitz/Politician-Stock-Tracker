@@ -29,6 +29,9 @@ def analyze_all(date=None):
         print("No trades meet the parameters")
         return None
     return _analyze(trades)
+
+def analyze_given(trades):
+    return _analyze(trades)
     
 def _analyze(trades):
     tickers = []

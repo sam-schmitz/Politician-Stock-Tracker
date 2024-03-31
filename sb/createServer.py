@@ -33,7 +33,7 @@ if __name__ == "__main__":
     cursor.execute('''CREATE TABLE IF NOT EXISTS oldestDate
                    (date INTEGER)''')
     cursor.execute('''CREATE TABLE IF NOT EXISTS committees
-                   (committeeID INTEGER PRIMARY KEY, industry TEXT, sector TEXT)''')
+                   (committeeID INTEGER PRIMARY KEY, name TEXT, industry TEXT, sector TEXT)''')
     cursor.execute('''CREATE TABLE IF NOT EXISTS committeeMembers 
                    (memberID INTEGER FORGEIN KEY, committeeID INTEGER FORGEIN KEY)''')
     conn.commit()
