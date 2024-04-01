@@ -6,6 +6,7 @@ from congressTrades import getTrades
 from fillDatabase import fill
 from server import stockBotAPI
 from analysis import analyze_six_months_mem, analyze_given
+from tkSliderWidget import Slider
 
 from datetime import datetime
 from datetime import date
@@ -217,6 +218,8 @@ class Page3(tk.Frame):  #displays trades
         filters = CollapsiblePane(self)
         filters.grid(row=rowButtons, column=0)
         labelDate = ttk.Label(filters.frame, text="Dates:").grid(row=1, column=2, pady=10)
+        dateslider = Slider(filters.frame, min_val=-100, max_val=100).grid(row=1, column=3)
+
         
     def display_trades(self):
         self.treev.delete(*self.treev.get_children())
@@ -246,7 +249,7 @@ class Page3(tk.Frame):  #displays trades
             messagebox.showinfo(
                 message=f"The average gain is: {analysis[0]}\n The average gain after disclosure is: {analysis[1]}",
                 title="Results")
-
+            
     def _hide_trade(self, id):
         self.tree.detach(id)
     
