@@ -195,7 +195,7 @@ class Page3(tk.Frame):  #displays trades
         rowButtons = 2
         rowTable = 3
         label = ttk.Label(self, text="Trades", font=("Verdana", 35))
-        label.grid(row=rowTitle, column=1, padx=10, pady=10)
+        label.grid(row=rowTitle, column=0, columnspan=2, padx=10, pady=10)
         
         button1 = ttk.Button(self, text="Back", 
         command = lambda : controller.show_frame(StartPage))
@@ -213,6 +213,10 @@ class Page3(tk.Frame):  #displays trades
         buttonAnalyze = ttk.Button(self, text='Analyze',
                                    command=self.analysis)
         buttonAnalyze.grid(row=rowButtons, column=1, padx=10, pady=10)
+        
+        filters = CollapsiblePane(self)
+        filters.grid(row=rowButtons, column=0)
+        labelDate = ttk.Label(filters.frame, text="Dates:").grid(row=1, column=2, pady=10)
         
     def display_trades(self):
         self.treev.delete(*self.treev.get_children())
@@ -235,13 +239,13 @@ class Page3(tk.Frame):  #displays trades
                 t.append(trade)
         analysis = analyze_given(t)
         if analysis == None:
-                messagebox.showinfo(
-                    message="No trades found in the timeframe",
-                    title='Results')
-            else:
-                messagebox.showinfo(
-                    message=f"The average gain from trades for {selection} is: {analysis[0]}\n The average gain after disclosure is: {analysis[1]}",
-                    title="Results")
+            messagebox.showinfo(
+                message="No trades found in the timeframe",
+                title='Results')
+        else:
+            messagebox.showinfo(
+                message=f"The average gain is: {analysis[0]}\n The average gain after disclosure is: {analysis[1]}",
+                title="Results")
 
     def _hide_trade(self, id):
         self.tree.detach(id)
@@ -267,7 +271,34 @@ class Page3(tk.Frame):  #displays trades
         self.treev.heading("5", text="Date Bought")
                 
  
+class CollapsiblePane(ttk.Frame):
+    
+    def __init__(self, parent, expanded_text="Filters <<", collapsed_text="Filters >>"):
+        ttk.Frame.__init__(self, parent)
+        self.parent = parent
+        self._expanded_text = expanded_text
+        self._collapsed_text = collapsed_text
+        self.columnconfigure(1, weight=1)
+        self._variable = tk.IntVar()
+        self._button = ttk.Checkbutton(self, variable=self._variable,
+                                       command = self._activate, style="TButton")
+        self._button.grid(row=0, column=0)
+        self._seperator = ttk.Separator(self, orient="horizontal")
+        self._seperator.grid(row=0, column=1, sticky="we")
+        self.frame = ttk.Frame(self)
+        self._activate()
         
+    def _activate(self):
+        if not self._variable.get():
+            self.frame.grid_forget()
+            self._button.configure(text=self._collapsed_text)
+        elif self._variable.get():
+            self.frame.grid(row=1, column=0, columnspan=2)
+            self._button.configure(text=self._expanded_text)
+            
+    def toggle(self):
+        self._variable.set(not self._variable.get())
+        self._activate()
         
 if __name__ == "__main__":
     app = tkinterApp()
