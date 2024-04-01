@@ -1,5 +1,5 @@
 #tkSliderWidget.py
-#By: MenxLi on github
+#Source Code: MenxLi on github
 
 from tkinter import *
 from tkinter.ttk import *

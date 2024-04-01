@@ -218,7 +218,7 @@ class Page3(tk.Frame):  #displays trades
         filters = CollapsiblePane(self)
         filters.grid(row=rowButtons, column=0)
         labelDate = ttk.Label(filters.frame, text="Dates:").grid(row=1, column=2, pady=10)
-        dateslider = Slider(filters.frame, min_val=-100, max_val=100).grid(row=1, column=3)
+        dateslider = Slider(filters.frame, min_val=-100, max_val=100, init_lis=[-50, 75]).grid(row=1, column=3)
 
         
     def display_trades(self):
