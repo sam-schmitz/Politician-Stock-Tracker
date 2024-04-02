@@ -208,10 +208,6 @@ class Page3(tk.Frame):  #displays trades
         self.sba = stockBotAPI()
         newest_date = self.sba.get_newest_date()
         oldest_date = self.sba.get_oldest_date()
-        self.filter = {'d1' : newest_date,
-                       'd2' : oldest_date}
-        self.trades = self.sba.get_all_trades()
-        self.display_trades()
         
         buttonAnalyze = ttk.Button(self, text='Analyze',
                                    command=self.analysis)
@@ -220,10 +216,15 @@ class Page3(tk.Frame):  #displays trades
         filters = CollapsiblePane(self)
         filters.grid(row=rowButtons, column=0)
         labelDate = ttk.Label(filters.frame, text="Dates:").grid(row=1, column=2, pady=10)
-        dateslider = Slider_Datetime(filters.frame, min_val=oldest_date, max_val=newest_date, init_lis=[oldest_date, newest_date]).grid(row=1, column=3)
+        self.dateSlider = Slider_Datetime(filters.frame, min_val=oldest_date, max_val=newest_date, init_lis=[oldest_date, newest_date])
+        self.dateSlider.grid(row=1, column=3)
+        
+        self.trades = self.sba.get_all_trades()
+        self.display_trades()
 
         
     def display_trades(self):
+        self._update_filter()
         self.treev.delete(*self.treev.get_children())
         for trade in self.trades:
             if self.filter_trade(trade):
@@ -239,6 +240,7 @@ class Page3(tk.Frame):  #displays trades
     
     def analysis(self):
         t = []
+        self._update_filter()
         for trade in self.trades:
             if self.filter_trade(trade):
                 t.append(trade)
@@ -251,6 +253,12 @@ class Page3(tk.Frame):  #displays trades
             messagebox.showinfo(
                 message=f"The average gain is: {analysis[0]}\n The average gain after disclosure is: {analysis[1]}",
                 title="Results")
+            
+    def _update_filter(self):
+        dateSliderValues = self.dateSlider.getValues()
+        print(dateSliderValues)
+        self.filter = {'d1' : dateSliderValues[1],
+                       'd2' : dateSliderValues[0]}
             
     def _hide_trade(self, id):
         self.tree.detach(id)

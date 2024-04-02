@@ -322,6 +322,7 @@ class Slider_Datetime(Frame):
 
     def getValues(self) -> List[float]:
         values = [datetime.fromtimestamp(bar["Value"]) for bar in self.bars]
+        values = [datetime(d.year, d.month, d.day) for d in values]
         return sorted(values)
     
     def setValueChangeCallback(self, callback: Callable[[List[float]], None]):
