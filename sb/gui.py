@@ -6,7 +6,7 @@ from congressTrades import getTrades
 from fillDatabase import fill
 from server import stockBotAPI
 from analysis import analyze_six_months_mem, analyze_given
-from tkSliderWidget import Slider
+from tkSliderWidget import Slider, Slider_Datetime
 
 from datetime import datetime
 from datetime import date
@@ -206,8 +206,10 @@ class Page3(tk.Frame):  #displays trades
         self.treev.grid(row=rowTable, column=0, columnspan=2)
         
         self.sba = stockBotAPI()
-        self.filter = {'d1' : self.sba.get_newest_date(),
-                       'd2' : self.sba.get_oldest_date()}
+        newest_date = self.sba.get_newest_date()
+        oldest_date = self.sba.get_oldest_date()
+        self.filter = {'d1' : newest_date,
+                       'd2' : oldest_date}
         self.trades = self.sba.get_all_trades()
         self.display_trades()
         
@@ -218,7 +220,7 @@ class Page3(tk.Frame):  #displays trades
         filters = CollapsiblePane(self)
         filters.grid(row=rowButtons, column=0)
         labelDate = ttk.Label(filters.frame, text="Dates:").grid(row=1, column=2, pady=10)
-        dateslider = Slider(filters.frame, min_val=-100, max_val=100, init_lis=[-50, 75]).grid(row=1, column=3)
+        dateslider = Slider_Datetime(filters.frame, min_val=oldest_date, max_val=newest_date, init_lis=[oldest_date, newest_date]).grid(row=1, column=3)
 
         
     def display_trades(self):
