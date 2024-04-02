@@ -3,6 +3,7 @@
 # methods for analyzing the data 
 
 from datetime import datetime, timedelta, date
+from math import isnan, nan
 import yfinance as yf
 
 from server import stockBotAPI
@@ -61,18 +62,23 @@ def _analyze(trades):
     biggestGain = 0
     for t in trades:
         if t["saleType"] == "BUY":
-            print(f"Buy Found: Tick: {t['tick']}, DateDis {t['dateDis']}, cPrice: {t['cPrice']}")
+            print(f"Buy Found: Tick: {t['tick']}, DateDis {t['dateDis']}, cPrice: {t['cPrice']}, priceB: {t['priceB']}, priceD: {t['priceD']}")
             cp = t['cPrice']
+            if isnan(cp):
+                print(f"Data not found for {t['tick']}")
+                continue
             estAmt = sizeToEstAmt[t['size']]
-            totalGainB += (cp - t["priceB"]) * estAmt
-            gainB = (cp - t["priceD"]) * estAmt
-            totalGainD += gainB
+            gainB = (cp - t["priceB"]) * estAmt
+            totalGainB += gainB
+            gainD = (cp - t["priceD"]) * estAmt
+            print("rows:", gainB, gainD)
+            totalGainD += gainD
             totalInvested += estAmt
-            print(totalGainB, totalGainD)
-            if gainB > biggestGain:
+            print("totals:", totalGainB, totalGainD)
+            if gainD > biggestGain:
                 biggestEarner = t
-                biggestGain = gainB
-                print(f"Biggest Earner: {t['tick']} ${estAmt} {t['member']} {t['dateB']}'")
+                biggestGain = gainD
+                print(f"Biggest Earner: {t['tick']} ${estAmt} {t['member']} {t['dateB']}, {gainD}")
     avgGainB = round(totalGainB/len(trades), 2)
     avgGainD = round(totalGainD/len(trades), 2)
     print("Average proft gained per trade: ", avgGainB)
