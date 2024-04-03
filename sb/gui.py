@@ -194,7 +194,8 @@ class Page3(tk.Frame):  #displays trades
         rowMenu = 0
         rowTitle = 1
         rowButtons = 2
-        rowTable = 3
+        rowButtons2 = 3
+        rowTable = 4
         label = ttk.Label(self, text="Trades", font=("Verdana", 35))
         label.grid(row=rowTitle, column=0, columnspan=2, padx=10, pady=10)
         
@@ -213,8 +214,12 @@ class Page3(tk.Frame):  #displays trades
                                    command=self.analysis)
         buttonAnalyze.grid(row=rowButtons, column=1, padx=10, pady=10)
         
+        buttonApplyFilters = ttk.Button(self, text='Apply Filters',
+                                        command=self.display_trades)
+        buttonApplyFilters.grid(row=rowButtons2, column=1, padx=10, pady=10)
+        
         filters = CollapsiblePane(self)
-        filters.grid(row=rowButtons, column=0)
+        filters.grid(row=rowButtons, column=0, rowspan=2)
         
         labelDate = ttk.Label(filters.frame, text="Dates:").grid(row=1, column=2, pady=10, padx=10)
         self.dateSlider = Slider_Datetime(filters.frame, min_val=oldest_date, max_val=newest_date, init_lis=[oldest_date, newest_date])
@@ -246,6 +251,7 @@ class Page3(tk.Frame):  #displays trades
         return True
     
     def analysis(self):
+        self.display_trades()
         t = []
         self._update_filter()
         for trade in self.trades:
