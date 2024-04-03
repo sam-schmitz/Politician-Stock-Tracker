@@ -185,7 +185,17 @@ class Page2(tk.Frame):  #data analysis page
         dateSelector.current(0)
         dateSelector.grid(row=rowAnalysisButtons, column=1, padx=10, pady=5)
         
+class ComboboxSearch(ttk.Combobox):
+    
+    def __init__(self, master=None, **kw):
+        super().__init__(master, **kw)
+        self.bind("<KeyRelease>", self._filter_options)
         
+    def _filter_options(self, event):
+        search_term = self.get().lower()
+        filtered_options = [item for item in self['values'] if search_term in item.lower()]
+        self['values'] = filtered_options
+   
         
 class Page3(tk.Frame):  #displays trades
     
@@ -230,6 +240,13 @@ class Page3(tk.Frame):  #displays trades
         self.delaySlider.grid(row=2, column=3)
         
         self.trades = self.sba.get_all_trades()
+        
+        self.ticks = [trade['tick'] for trade in self.trades]
+        labelTick = ttk.Label(filters.frame, text="Ticks:").grid(row=3, column=2, pady=10, padx=10)
+        self.comboboxTick = ComboboxSearch(filters.frame, values=self.ticks)
+        self.comboboxTick.grid(row=3, column=3, sticky='ew')
+        self.comboboxTick.bind("<<ComboboxSelected>>", self._on_select)
+        
         self.display_trades()
 
         
@@ -248,6 +265,9 @@ class Page3(tk.Frame):  #displays trades
             return False
         if trade['delay'] > self.filter['delay']:
             return False
+        if self.filter['tick'] != '':
+            if self.filter['tick'] not in trade['tick']: 
+                return False
         return True
     
     def analysis(self):
@@ -271,7 +291,8 @@ class Page3(tk.Frame):  #displays trades
         dateSliderValues = self.dateSlider.getValues()
         self.filter = {'d1' : dateSliderValues[1],
                        'd2' : dateSliderValues[0],
-                       'delay' : self.delaySlider.getValues()[0]}
+                       'delay' : self.delaySlider.getValues()[0],
+                       'tick' : self.comboboxTick.get()}
         print(self.filter)
             
     def _hide_trade(self, id):
@@ -298,6 +319,10 @@ class Page3(tk.Frame):  #displays trades
         self.treev.heading("4", text="Date Disclosed")
         self.treev.heading("5", text="Date Bought")
         self.treev.heading("6", text="Delay")
+             
+    def _on_select(self, event):
+        selected_item = self.comboboxTick.get()
+        self.entry_var.set(selected_item)
                 
  
 class CollapsiblePane(ttk.Frame):
@@ -328,6 +353,9 @@ class CollapsiblePane(ttk.Frame):
     def toggle(self):
         self._variable.set(not self._variable.get())
         self._activate()
+        
+
+        
         
 if __name__ == "__main__":
     app = tkinterApp()
