@@ -278,7 +278,7 @@ class Page3(tk.Frame):  #displays trades
         for trade in self.trades:
             if self.filter_trade(trade):
                 trade['id'] = self.treev.insert("", 'end', text="L",
-                        values = (trade["tick"], trade["saleType"], trade["member"], trade['dateDis'], trade['dateB'], trade['delay'], trade['companyName']))
+                        values = (trade["tick"], trade["saleType"], trade["member"], trade['dateDis'].strftime("%m-%d-%Y"), trade['dateB'].strftime("%m-%d-%Y"), trade['delay'], trade['companyName']))
         
     def filter_trade(self, trade):
         if trade['dateDis'] > self.filter['d1']:
