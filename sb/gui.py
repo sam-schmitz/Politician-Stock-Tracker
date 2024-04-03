@@ -2,6 +2,7 @@
 # By: Sam Schmitz and Gavin Roy
 # The gui for the politician stock tracker
 
+from re import L
 from congressTrades import getTrades
 from fillDatabase import fill
 from server import stockBotAPI
@@ -230,34 +231,40 @@ class Page3(tk.Frame):  #displays trades
         
         filters = CollapsiblePane(self)
         filters.grid(row=rowButtons, column=0, rowspan=2)
+        rowDates = 1
+        rowDelay = 2
+        rowTicks = 3
+        rowCompanyNames = 4
+        rowTradeType = 5
+        rowMember = 6
         
         #dates
-        labelDate = ttk.Label(filters.frame, text="Dates:").grid(row=1, column=2, pady=5, padx=10)
+        labelDate = ttk.Label(filters.frame, text="Dates:").grid(row=rowDates, column=2, pady=5, padx=10)
         self.dateSlider = Slider_Datetime(filters.frame, min_val=oldest_date, max_val=newest_date, init_lis=[oldest_date, newest_date])
-        self.dateSlider.grid(row=1, column=3, columnspan=2)
+        self.dateSlider.grid(row=rowDates, column=3, columnspan=2)
         
         #delay
-        labelDelay = ttk.Label(filters.frame, text="Delay:").grid(row=2, column=2, pady=5, padx=10)
+        labelDelay = ttk.Label(filters.frame, text="Delay:").grid(row=rowDelay, column=2, pady=5, padx=10)
         self.delaySlider = Slider(filters.frame, min_val=0, max_val=50, init_lis=[50], step_size=1.0)
-        self.delaySlider.grid(row=2, column=3, columnspan=2)
+        self.delaySlider.grid(row=rowDelay, column=3, columnspan=2)
         
         self.trades = self.sba.get_all_trades()
         
         #ticks
         self.ticks = [trade['tick'] for trade in self.trades]
-        labelTick = ttk.Label(filters.frame, text="Ticks:").grid(row=3, column=2, pady=5, padx=10)
+        labelTick = ttk.Label(filters.frame, text="Ticks:").grid(row=rowTicks, column=2, pady=5, padx=10)
         self.comboboxTick = ComboboxSearch(filters.frame, values=self.ticks)
-        self.comboboxTick.grid(row=3, column=3, columnspan=2, sticky='ew')
+        self.comboboxTick.grid(row=rowTicks, column=3, columnspan=2, sticky='ew')
         
         #company names
         self.companyNames = [trade['companyName'] for trade in self.trades]
-        labelCompanyName = ttk.Label(filters.frame, text="Company Name:").grid(row=4, column=2, pady=5, padx=10)
+        labelCompanyName = ttk.Label(filters.frame, text="Company Name:").grid(row=rowCompanyNames, column=2, pady=5, padx=10)
         self.comboboxCN = ComboboxSearch(filters.frame, values=self.companyNames)
-        self.comboboxCN.grid(row=4, column=3, columnspan=2, sticky='ew')
+        self.comboboxCN.grid(row=rowCompanyNames, column=3, columnspan=2, sticky='ew')
 
 
         #trade type
-        labelTradeType = ttk.Label(filters.frame, text="Trade Type:").grid(row=5, column=2, pady=5, padx=10)
+        labelTradeType = ttk.Label(filters.frame, text="Trade Type:").grid(row=rowTradeType, column=2, pady=5, padx=10)
         self.buyButton = tk.IntVar()
         self.sellButton = tk.IntVar()
         bButton = tk.Checkbutton(filters.frame, text="Buy", variable=self.buyButton, \
@@ -266,8 +273,17 @@ class Page3(tk.Frame):  #displays trades
                                  onvalue=1, offvalue=0)
         bButton.select()
         sButton.select()
-        bButton.grid(row=5, column=3, pady=5, padx=10)
-        sButton.grid(row=5, column=4, pady=5, padx=10)
+        bButton.grid(row=rowTradeType, column=3, pady=5, padx=10)
+        sButton.grid(row=rowTradeType, column=4, pady=5, padx=10)
+        
+        #members
+        labelMembers = ttk.Label(filters.frame, text="Members:").grid(row=rowMember, column=2, padx=10, pady=5)
+        self.memberNames = self.sba.get_all_members()
+        self.memberNames = ["all"] + self.memberNames
+        self.selected_member = tk.StringVar(filters.frame)
+        self.selected_member.set("all")
+        self.member_selecter = tk.OptionMenu(filters.frame, self.selected_member, *self.memberNames)
+        self.member_selecter.grid(row=rowMember, column=3, pady=5, padx=10)
         
         self.display_trades()
 
