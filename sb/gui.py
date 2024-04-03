@@ -280,10 +280,12 @@ class Page3(tk.Frame):  #displays trades
         labelMembers = ttk.Label(filters.frame, text="Members:").grid(row=rowMember, column=2, padx=10, pady=5)
         self.memberNames = self.sba.get_all_members()
         self.memberNames = ["all"] + self.memberNames
-        self.selected_member = tk.StringVar(filters.frame)
+        self.comboboxMembers = ComboboxSearch(filters.frame, values = self.memberNames)
+        self.comboboxMembers.grid(row=rowMember, column=3, columnspan=2)
+        """self.selected_member = tk.StringVar(filters.frame)
         self.selected_member.set("all")
         self.member_selecter = tk.OptionMenu(filters.frame, self.selected_member, *self.memberNames)
-        self.member_selecter.grid(row=rowMember, column=3, pady=5, padx=10)
+        self.member_selecter.grid(row=rowMember, column=3, pady=5, padx=10)"""
         
         self.display_trades()
 
@@ -315,6 +317,9 @@ class Page3(tk.Frame):  #displays trades
         elif trade['saleType'] == 'SELL':
             if self.filter['sell'] == False:
                 return False
+        if self.filter['member'] != '' or self.filter['member'] != 'all':
+            if self.filter['member'] not in trade['member']:
+                return False
         return True
     
     def analysis(self):
@@ -340,7 +345,8 @@ class Page3(tk.Frame):  #displays trades
                        'd2' : dateSliderValues[0],
                        'delay' : self.delaySlider.getValues()[0],
                        'tick' : self.comboboxTick.get(),
-                       'companyName': self.comboboxCN.get()}
+                       'companyName': self.comboboxCN.get(),
+                       'member' : self.comboboxMembers.get()}
         print(self.buyButton.get())
         if self.buyButton.get() == 1:
             self.filter['buy'] = True
