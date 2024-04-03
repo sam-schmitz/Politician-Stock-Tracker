@@ -215,9 +215,14 @@ class Page3(tk.Frame):  #displays trades
         
         filters = CollapsiblePane(self)
         filters.grid(row=rowButtons, column=0)
-        labelDate = ttk.Label(filters.frame, text="Dates:").grid(row=1, column=2, pady=10)
+        
+        labelDate = ttk.Label(filters.frame, text="Dates:").grid(row=1, column=2, pady=10, padx=10)
         self.dateSlider = Slider_Datetime(filters.frame, min_val=oldest_date, max_val=newest_date, init_lis=[oldest_date, newest_date])
         self.dateSlider.grid(row=1, column=3)
+        
+        labelDelay = ttk.Label(filters.frame, text="Delay:").grid(row=2, column=2, pady=10, padx=10)
+        self.delaySlider = Slider(filters.frame, min_val=0, max_val=50, init_lis=[50], step_size=1.0)
+        self.delaySlider.grid(row=2, column=3)
         
         self.trades = self.sba.get_all_trades()
         self.display_trades()
@@ -229,12 +234,14 @@ class Page3(tk.Frame):  #displays trades
         for trade in self.trades:
             if self.filter_trade(trade):
                 trade['id'] = self.treev.insert("", 'end', text="L",
-                        values = (trade["tick"], trade["saleType"], trade["member"], trade['dateDis'], trade['dateB']))
+                        values = (trade["tick"], trade["saleType"], trade["member"], trade['dateDis'], trade['dateB'], trade['delay']))
         
     def filter_trade(self, trade):
         if trade['dateDis'] > self.filter['d1']:
             return False
         if trade['dateDis'] < self.filter['d2']:
+            return False
+        if trade['delay'] > self.filter['delay']:
             return False
         return True
     
@@ -256,9 +263,10 @@ class Page3(tk.Frame):  #displays trades
             
     def _update_filter(self):
         dateSliderValues = self.dateSlider.getValues()
-        print(dateSliderValues)
         self.filter = {'d1' : dateSliderValues[1],
-                       'd2' : dateSliderValues[0]}
+                       'd2' : dateSliderValues[0],
+                       'delay' : self.delaySlider.getValues()[0]}
+        print(self.filter)
             
     def _hide_trade(self, id):
         self.tree.detach(id)
@@ -270,18 +278,20 @@ class Page3(tk.Frame):  #displays trades
         self.treev = ttk.Treeview(self, selectmode='browse')
         verscrlbar = ttk.Scrollbar(self, orient="vertical", command=self.treev.yview)
         self.treev.configure(xscrollcommand = verscrlbar.set)
-        self.treev["columns"] = ("1", "2", "3", "4", "5")
+        self.treev["columns"] = ("1", "2", "3", "4", "5", "6")
         self.treev['show'] = 'headings'
         self.treev.column("1", width=90, anchor='c')
         self.treev.column("2", width=90, anchor='se')
         self.treev.column("3", width=90, anchor='se')
         self.treev.column("4", width=90, anchor='se')
         self.treev.column("5", width=90, anchor='se')
+        self.treev.column("6", width=90, anchor='se')
         self.treev.heading("1", text="Tick")
         self.treev.heading("2", text="Sale Type")
         self.treev.heading("3", text="Member")
         self.treev.heading("4", text="Date Disclosed")
         self.treev.heading("5", text="Date Bought")
+        self.treev.heading("6", text="Delay")
                 
  
 class CollapsiblePane(ttk.Frame):

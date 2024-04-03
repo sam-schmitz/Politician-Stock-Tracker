@@ -90,7 +90,7 @@ class stockBotAPI:
     def get_all_trades(self, date=None):
         #gets trades from (current, date) for all members in the database
         query = f'''SELECT s.tick, t.saleType, 
-                    t.dateBought, t.dateDisclosed, m.Name, t.priceBought, t.priceDisclosed, t.size
+                    t.dateBought, t.dateDisclosed, m.Name, t.priceBought, t.priceDisclosed, t.size, t.Delay
                     FROM stocks s
                     INNER JOIN trades t ON s.stockID = t.stockID
                     INNER JOIN members m ON t.memberID = m.memberID'''
@@ -109,13 +109,14 @@ class stockBotAPI:
                            'member':t[4],
                            'priceB':t[5],
                            'priceD':t[6],
-                           'size':t[7]})
+                           'size':t[7],
+                           'delay':t[8]})
         return trades
     
     def get_member_trades(self, member, date=None):
         #gets trades from (current, date) for a named member
         query = f'''SELECT s.tick, t.saleType,
-                    t.dateBought, t.dateDisclosed, m.Name, t.priceBought, t.priceDisclosed, t.size
+                    t.dateBought, t.dateDisclosed, m.Name, t.priceBought, t.priceDisclosed, t.size, t.Delay
                     FROM stocks s
                     INNER JOIN trades t ON s.stockID = t.stockID
                     INNER JOIN members m ON t.memberID = m.memberID
@@ -136,7 +137,8 @@ class stockBotAPI:
                            'member':t[4],
                            'priceB':t[5],
                            'priceD':t[6],
-                           'size':t[7]})
+                           'size':t[7],
+                           'delay':t[8]})
         return trades
         #return self._fetchall_to_trades(allTrades)
 
