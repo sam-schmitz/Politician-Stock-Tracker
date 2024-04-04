@@ -89,7 +89,8 @@ def _analyze(trades):
     print("% gain overall: ", (totalGainB/totalInvested)*100 )
     print("% gain after disclosure: ", (totalGainD/totalInvested)*100)
     print(f"Biggest Earner: {biggestEarner['tick']} ${sizeToEstAmt[biggestEarner['size']]} {biggestEarner['member']} {biggestEarner['dateB']}'")
-    return (avgGainB, avgGainD, totalInvested)
+    biggestEarner['size'] = sizeToEstAmt[biggestEarner['size']]
+    return (avgGainB, avgGainD, totalInvested, len(trades), biggestEarner)
     
 if __name__ == "__main__":
     """d1 = date.today()

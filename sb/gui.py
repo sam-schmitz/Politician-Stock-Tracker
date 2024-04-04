@@ -28,7 +28,7 @@ class tkinterApp(tk.Tk):
         
         self.frames = {}
         
-        for F in (StartPage, Page1, Page2, Page3):
+        for F in (StartPage, Page1, Page2, Page3, Page4):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -36,6 +36,11 @@ class tkinterApp(tk.Tk):
         
     def show_frame(self, cont):
         frame = self.frames[cont]
+        frame.tkraise()
+        
+    def show_analysis(self, trades):
+        frame = self.frames[Page4]
+        frame.start_analysis(trades)
         frame.tkraise()
         
     def show_tree(self):
@@ -388,6 +393,48 @@ class Page3(tk.Frame):  #displays trades
     def _on_select(self, event):
         selected_item = self.comboboxTick.get()
         self.entry_var.set(selected_item)
+        
+class Page4(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.sba = stockBotAPI()
+        
+        rowMenu = 1
+        rowTitle = 2
+        rowDetails = 3
+        
+        button1 = ttk.Button(self, text="Back", 
+        command = lambda : controller.show_frame(Page3))
+        button1.grid(row=rowMenu, column=1, padx=10, pady=10)
+        
+        labelTitle = ttk.Label(self, text="Analysis", font=("Verdana", 35))
+        labelTitle.grid(row=rowTitle, column=1, columnspan=2, padx=10, pady=10)
+        
+        self.labelDetails = ttk.Label(self, text="")
+        self.labelDetails.grid(row=rowDetails, column=1, padx=10, pady=10)
+        
+    def start_analysis(self, trades):
+        #Hide labelDetails
+        #Create the loading screen
+        analysis = analyze_given(trades)
+        
+        totalGainB = analysis[0]*analysis[3]
+        totalGainD = analysis[1]*analysis[3]
+
+        displayText = f"""Average proft gained per trade: {analysis[0]}
+Average profit gained per trade after disclosure: {analysis[1]}
+Total amount invested: {analysis[2]}
+Total profit gained: {totalGainB}
+Total profit gained after disclosure: {totalGainD}
+% gain overall: {(totalGainB/analysis[2])*100}%
+% gain after disclosure: {(totalGainD/analysis[2])*100}%
+Biggest Earner: {analysis[4]['tick']} ${[analysis[4]['size']]} {analysis[4]['member']} {analysis[4]['dateB']}"""
+        
+        #bring labelDetails back
+        self.labelDetails.config(text=displayText)
+        
+        
+    
                 
  
 class CollapsiblePane(ttk.Frame):
