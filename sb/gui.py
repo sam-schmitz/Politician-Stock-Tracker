@@ -40,8 +40,10 @@ class tkinterApp(tk.Tk):
         
     def show_analysis(self, trades):
         frame = self.frames[Page4]
-        frame.start_analysis(trades)
+        frame.start_loading()
         frame.tkraise()
+        self.update()
+        frame.start_analysis(trades)
         
     def show_tree(self):
         pass
@@ -227,7 +229,7 @@ class Page3(tk.Frame):  #displays trades
         oldest_date = self.sba.get_oldest_date()
         
         buttonAnalyze = ttk.Button(self, text='Analyze',
-                                   command=self.analysis)
+                                   command=lambda : controller.show_analysis(self.analysis()))
         buttonAnalyze.grid(row=rowButtons, column=1, padx=10, pady=10)
         
         buttonApplyFilters = ttk.Button(self, text='Apply Filters',
@@ -334,6 +336,7 @@ class Page3(tk.Frame):  #displays trades
         for trade in self.trades:
             if self.filter_trade(trade):
                 t.append(trade)
+        return t
         analysis = analyze_given(t)
         if analysis == None:
             messagebox.showinfo(
@@ -414,8 +417,6 @@ class Page4(tk.Frame):
         self.labelDetails.grid(row=rowDetails, column=1, padx=10, pady=10)
         
     def start_analysis(self, trades):
-        #Hide labelDetails
-        #Create the loading screen
         analysis = analyze_given(trades)
         
         totalGainB = analysis[0]*analysis[3]
@@ -431,7 +432,17 @@ Total profit gained after disclosure: {totalGainD}
 Biggest Earner: {analysis[4]['tick']} ${[analysis[4]['size']]} {analysis[4]['member']} {analysis[4]['dateB']}"""
         
         #bring labelDetails back
+        self.labelLoading.grid_remove()
+        self.labelDetails.grid(row=3, column=1, columnspan=2, padx=10, pady=10)
         self.labelDetails.config(text=displayText)
+        
+    def start_loading(self):
+        self.labelDetails.grid_remove()
+        self.labelLoading = ttk.Label(self, text="Loading...", font=("Verdana", 25)
+        self.labelLoading.grid(row=3, column=1, columnspan=2)
+        #Hide labelDetails
+        #Create the loading screen
+        
         
         
     
