@@ -405,6 +405,7 @@ class Page4(tk.Frame):
         rowMenu = 1
         rowTitle = 2
         rowDetails = 3
+        rowTable = 4
         
         button1 = ttk.Button(self, text="Back", 
         command = lambda : controller.show_frame(Page3))
@@ -415,6 +416,9 @@ class Page4(tk.Frame):
         
         self.labelDetails = ttk.Label(self, text="")
         self.labelDetails.grid(row=rowDetails, column=1, padx=10, pady=10)
+        
+        self._create_treeview()
+        self.treev.grid(row=rowTable, column=1, columnspan=2, padx=10, pady=10)
         
     def start_analysis(self, trades):
         analysis = analyze_given(trades)
@@ -431,17 +435,44 @@ Total profit gained after disclosure: {totalGainD}
 % gain after disclosure: {(totalGainD/analysis[2])*100}%
 Biggest Earner: {analysis[4]['tick']} ${[analysis[4]['size']]} {analysis[4]['member']} {analysis[4]['dateB']}"""
         
-        #bring labelDetails back
         self.labelLoading.grid_remove()
         self.labelDetails.grid(row=3, column=1, columnspan=2, padx=10, pady=10)
         self.labelDetails.config(text=displayText)
+        for trade in analysis[5]:
+            if self.filter_trade(trade):
+                trade['id'] = self.treev.insert("", 'end', text="L",
+                        values = (trade["tick"], trade["saleType"], trade["member"], trade['priceC'], trade['dateB'].strftime("%m-%d-%Y"), trade['priceB'], trade['gainB']))
         
     def start_loading(self):
         self.labelDetails.grid_remove()
-        self.labelLoading = ttk.Label(self, text="Loading...", font=("Verdana", 25)
+        self.labelLoading = ttk.Label(self, text="Loading...", font=("Verdana", 25))
         self.labelLoading.grid(row=3, column=1, columnspan=2)
-        #Hide labelDetails
-        #Create the loading screen
+        
+    def filter_trade(self, trade):
+        #might evenutally add in filters for the table
+        return True
+        
+    def _create_treeview(self):
+        self.treev = ttk.Treeview(self, selectmode='browse')
+        verscrlbar = ttk.Scrollbar(self, orient="vertical", command=self.treev.yview)
+        self.treev.configure(xscrollcommand = verscrlbar.set)
+        self.treev["columns"] = ("1", "2", "3", "4", "5", "6", "7")
+        self.treev['show'] = 'headings'
+        self.treev.column("1", width=90, anchor='c')
+        self.treev.column("2", width=90, anchor='se')
+        self.treev.column("3", width=90, anchor='se')
+        self.treev.column("4", width=90, anchor='se')
+        self.treev.column("5", width=90, anchor='se')
+        self.treev.column("6", width=90, anchor='se')
+        self.treev.column("7", width=90, anchor='se')
+        self.treev.heading("1", text="Tick")
+        self.treev.heading("2", text="Sale Type")
+        self.treev.heading("3", text="Member")
+        self.treev.heading("4", text="Current Price")
+        self.treev.heading("5", text="Date Bought")
+        self.treev.heading("6", text="Price Bought")
+        self.treev.heading("7", text="Gain After Bought")
+        
         
         
         

@@ -60,6 +60,7 @@ def _analyze(trades):
                    8 : 7500000}
     biggestEarner = None
     biggestGain = 0
+    tradesAnalysis = []
     for t in trades:
         if t["saleType"] == "BUY":
             print(f"Buy Found: Tick: {t['tick']}, DateDis {t['dateDis']}, cPrice: {t['cPrice']}, priceB: {t['priceB']}, priceD: {t['priceD']}")
@@ -79,6 +80,17 @@ def _analyze(trades):
                 biggestEarner = t
                 biggestGain = gainD
                 print(f"Biggest Earner: {t['tick']} ${estAmt} {t['member']} {t['dateB']}, {gainD}")
+            tradesAnalysis.append({'tick': t['tick'],
+                           'gainB' : gainB,
+                           'gainD' : gainD,
+                           'member': t['member'],
+                           'estAmt': estAmt,
+                           'priceB': t['priceB'],
+                           'priceD': t['priceD'],
+                           'priceC' : cp,
+                           'saleType' : t['saleType'],
+                           'dateB' : t['dateB'],
+                           'dateD' : t['dateDis']})
     avgGainB = round(totalGainB/len(trades), 2)
     avgGainD = round(totalGainD/len(trades), 2)
     print("Average proft gained per trade: ", avgGainB)
@@ -90,7 +102,7 @@ def _analyze(trades):
     print("% gain after disclosure: ", (totalGainD/totalInvested)*100)
     print(f"Biggest Earner: {biggestEarner['tick']} ${sizeToEstAmt[biggestEarner['size']]} {biggestEarner['member']} {biggestEarner['dateB']}'")
     biggestEarner['size'] = sizeToEstAmt[biggestEarner['size']]
-    return (avgGainB, avgGainD, totalInvested, len(trades), biggestEarner)
+    return (avgGainB, avgGainD, totalInvested, len(trades), biggestEarner, tradesAnalysis)
     
 if __name__ == "__main__":
     """d1 = date.today()
