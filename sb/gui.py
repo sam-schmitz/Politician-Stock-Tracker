@@ -15,6 +15,7 @@ from datetime import timedelta
     
 import tkinter as tk
 from tkinter import ttk, messagebox
+import ttkbootstrap as ttk
     
 class tkinterApp(tk.Tk):
     
@@ -24,7 +25,6 @@ class tkinterApp(tk.Tk):
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
-        container.grid_columnconfigure(4, weight=1)
         
         self.frames = {}
         
@@ -54,46 +54,50 @@ class tkinterApp(tk.Tk):
 class StartPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent, background="#121212")
-        style = ttk.Style()
-        style.configure("BW.TLabel", foreground="white", background="#121212")
-        style.configure("BW.TButton", foreground="#121212", background="#121212")
-        label = ttk.Label(self, text="Politician Stock Tracker", font=("Verdana", 35), style="BW.TLabel")
-        label.grid(row=0, column=0, columnspan=5, rowspan=2, padx=10, pady=10, sticky="ES")
+        self.style = ttk.Style()
+        self.style.configure("title.TLabel", foreground="#ededed", background="#121212", font=("Verdana", 35), weight="bold")
+        self.style.configure("body.TLabel", foreground="#ededed", background="#121212", font=("Verdana", 12))
+        self.style.configure("header.TLabel", foreground="#ededed", background="#121212", font=("Verdana", 14), weight="bold")
+        self.style.configure("BW.TButton", foreground="#121212", background="#121212", font=("Verdana", 12))
+        label = ttk.Label(self, text="Politician Stock Tracker", style="title.TLabel", anchor="center")
+        label.grid(row=0, column=0, columnspan=5, rowspan=2, padx=10, pady=25, sticky="NESW")
         controller.grid_columnconfigure(1, weight=1)
         controller.grid_columnconfigure(2, weight=1)
         controller.grid_columnconfigure(3, weight=1)
         controller.grid_columnconfigure(4, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(4, weight=1)
         
         #button1 = ttk.Button(self, text="Page 1",
         #command = lambda : controller.show_frame(Page1))
         #button1.grid(row=1, column=1, padx=10, pady=10)
         
-        button2 = ttk.Button(self, text="Ananlysis",
-        command = lambda : controller.show_frame(Page2),
-        style="BW.TButton")
-        button2.grid(row=2, column=1, padx=10, pady=10)
+        #button2 = ttk.Button(self, text="Ananlysis",
+        #command = lambda : controller.show_frame(Page2),
+        #style="BW.TButton")
+        #button2.grid(row=2, column=1, padx=10, pady=10)
         
         button3 = ttk.Button(self, text="Trades",
         command = lambda : controller.show_frame(Page3),
         style="BW.TButton")
-        button3.grid(row=2, column=3, padx=10, pady=10)
+        button3.grid(row=2, column=2, padx=15, pady=10)
         
         api = stockBotAPI()
         newestDate = api.get_newest_date()
         oldestDate = api.get_oldest_date()
         api.close()
 
-        newestScrape1 = ttk.Label(self, text="Newest Scrape:", style="BW.TLabel")
+        newestScrape1 = ttk.Label(self, text="Newest Scrape:", style="header.TLabel")
         newestScrape1.grid(row=3, column=1)
         
-        newestScrape2 = ttk.Label(self, text=newestDate, style="BW.TLabel")
+        newestScrape2 = ttk.Label(self, text=newestDate, style="body.TLabel")
         newestScrape2.grid(row=4, column=1)
         
-        oldestScrape1 = ttk.Label(self, text="Oldest Scrape:", style="BW.TLabel")
-        oldestScrape1.grid(row=3, column=3)
+        oldestScrape1 = ttk.Label(self, text="Oldest Scrape:", style="header.TLabel")
+        oldestScrape1.grid(row=3, column=3, padx=10)
         
-        oldestScrape2 = ttk.Label(self, text=oldestDate, style="BW.TLabel")
-        oldestScrape2.grid(row=4, column=3)
+        oldestScrape2 = ttk.Label(self, text=oldestDate, style="body.TLabel")
+        oldestScrape2.grid(row=4, column=3, padx=10)
         
 class Page1(tk.Frame):  #scrapes for new data
     
@@ -218,28 +222,32 @@ class Page3(tk.Frame):  #displays trades
     
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent, background="#121212")
-        self.style = ttk.Style()
-        self.style.configure("BW.TLabel", foreground="white", background="#121212")
-        self.style.configure("BW.TButton", foreground="#121212", background="#121212")
-        self.style.configure("Treeview.Heading", background="#121212")
-        self.style.configure("BW.TCollapsiblePane")
-        self.style.configure("BW.TDateSlider")
+        style = ttk.Style()
+        style.configure("Page3.TButton", foreground="#121212", background="#121212", font=("Verdana", 10))
+        style.configure("saletype.TCheckbutton", background="#121212", foreground="#ededed", font=("Verdana", 10))
+        style.configure("Treeview", background="#121212", foreground="#ededed")
+        style.configure("Treeview.Heading", background="#ededed", foreground="#121212")
+        
         rowMenu = 0
         rowTitle = 1
         rowButtons = 2
         rowButtons2 = 3
         rowTable = 4
-        label = ttk.Label(self, text="Trades", font=("Verdana", 35), style="BW.TLabel")
-        label.grid(row=rowTitle, column=0, columnspan=2, padx=10, pady=10)
+        
+        self.grid_rowconfigure(rowTable, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+
+        label = ttk.Label(self, text="Trades", font=("Verdana", 35), style="title.TLabel")
+        label.grid(row=rowTitle, column=0, columnspan=3, padx=10, pady=10)
         
         button1 = ttk.Button(self, text="Back", 
         command = lambda : controller.show_frame(StartPage), 
-        style="BW.TButton")
+        style="Page3.TButton")
         button1.grid(row=rowMenu, column=0, padx=10, pady=10, sticky='NW')
         
         self.treev = ttk.Treeview(self, selectmode='browse')
         self._create_treeview()
-        self.treev.grid(row=rowTable, column=0, columnspan=2)
+        self.treev.grid(row=rowTable, column=0, columnspan=3)
         
         self.sba = stockBotAPI()
         newest_date = self.sba.get_newest_date()
@@ -247,16 +255,16 @@ class Page3(tk.Frame):  #displays trades
         
         buttonAnalyze = ttk.Button(self, text='Analyze',
                                    command=lambda : controller.show_analysis(self.analysis()),
-                                   style="BW.TButton")
-        buttonAnalyze.grid(row=rowButtons, column=1, padx=10, pady=10, sticky='S')
+                                   style="Page3.TButton")
+        buttonAnalyze.grid(row=rowButtons, column=2, padx=10, pady=10, sticky='S')
         
         buttonApplyFilters = ttk.Button(self, text='Apply Filters',
                                         command=self.display_trades,
-                                        style="BW.TButton")
-        buttonApplyFilters.grid(row=rowButtons2, column=1, padx=10, pady=10, sticky="N")
+                                        style="Page3.TButton")
+        buttonApplyFilters.grid(row=rowButtons2, column=2, padx=10, pady=10, sticky="N")
         
         filters = CollapsiblePane(self)
-        filters.grid(row=rowButtons, column=0, rowspan=2)
+        filters.grid(row=rowButtons, column=0, rowspan=2, sticky="W")
         rowDates = 1
         rowDelay = 2
         rowTicks = 3
@@ -265,12 +273,12 @@ class Page3(tk.Frame):  #displays trades
         rowMember = 6
         
         #dates
-        labelDate = ttk.Label(filters.frame, text="Dates:", style="BW.TLabel").grid(row=rowDates, column=2, pady=5, padx=10)
+        labelDate = ttk.Label(filters.frame, text="Dates:", style="body.TLabel").grid(row=rowDates, column=2, pady=5, padx=10)
         self.dateSlider = Slider_Datetime(filters.frame, min_val=oldest_date, max_val=newest_date, init_lis=[oldest_date, newest_date])
         self.dateSlider.grid(row=rowDates, column=3, columnspan=2)
         
         #delay
-        labelDelay = ttk.Label(filters.frame, text="Delay:").grid(row=rowDelay, column=2, pady=5, padx=10)
+        labelDelay = ttk.Label(filters.frame, text="Delay:", style="body.TLabel").grid(row=rowDelay, column=2, pady=5, padx=10)
         self.delaySlider = Slider(filters.frame, min_val=0, max_val=50, init_lis=[50], step_size=1.0)
         self.delaySlider.grid(row=rowDelay, column=3, columnspan=2)
         
@@ -278,32 +286,30 @@ class Page3(tk.Frame):  #displays trades
         
         #ticks
         self.ticks = [trade['tick'] for trade in self.trades]
-        labelTick = ttk.Label(filters.frame, text="Ticks:").grid(row=rowTicks, column=2, pady=5, padx=10)
+        labelTick = ttk.Label(filters.frame, text="Ticks:", style="body.TLabel").grid(row=rowTicks, column=2, pady=5, padx=10)
         self.comboboxTick = ComboboxSearch(filters.frame, values=self.ticks)
         self.comboboxTick.grid(row=rowTicks, column=3, columnspan=2, sticky='ew')
         
         #company names
         self.companyNames = [trade['companyName'] for trade in self.trades]
-        labelCompanyName = ttk.Label(filters.frame, text="Company Name:").grid(row=rowCompanyNames, column=2, pady=5, padx=10)
+        labelCompanyName = ttk.Label(filters.frame, text="Company Name:", style="body.TLabel").grid(row=rowCompanyNames, column=2, pady=5, padx=10)
         self.comboboxCN = ComboboxSearch(filters.frame, values=self.companyNames)
         self.comboboxCN.grid(row=rowCompanyNames, column=3, columnspan=2, sticky='ew')
 
 
         #trade type
-        labelTradeType = ttk.Label(filters.frame, text="Trade Type:").grid(row=rowTradeType, column=2, pady=5, padx=10)
-        self.buyButton = tk.IntVar()
-        self.sellButton = tk.IntVar()
-        bButton = tk.Checkbutton(filters.frame, text="Buy", variable=self.buyButton, \
-                                 onvalue=1, offvalue=0)
-        sButton = tk.Checkbutton(filters.frame, text="Sell", variable=self.sellButton, \
-                                 onvalue=1, offvalue=0)
-        bButton.select()
-        sButton.select()
+        labelTradeType = ttk.Label(filters.frame, text="Trade Type:", style="body.TLabel").grid(row=rowTradeType, column=2, pady=5, padx=10)
+        self.buyButton = tk.BooleanVar()
+        self.sellButton = tk.BooleanVar()
+        self.buyButton.set(True)
+        self.sellButton.set(True)
+        bButton = ttk.Checkbutton(filters.frame, text="Buy", style="saletype.TCheckbutton", variable=self.buyButton)
+        sButton = ttk.Checkbutton(filters.frame, text="Sell", style="saletype.TCheckbutton", variable=self.sellButton)
         bButton.grid(row=rowTradeType, column=3, pady=5, padx=10)
         sButton.grid(row=rowTradeType, column=4, pady=5, padx=10)
         
         #members
-        labelMembers = ttk.Label(filters.frame, text="Members:").grid(row=rowMember, column=2, padx=10, pady=5)
+        labelMembers = ttk.Label(filters.frame, text="Members:", style="body.TLabel").grid(row=rowMember, column=2, padx=10, pady=5)
         self.memberNames = self.sba.get_all_members()
         self.memberNames = ["all"] + self.memberNames
         self.comboboxMembers = ComboboxSearch(filters.frame, values = self.memberNames)
@@ -373,16 +379,9 @@ class Page3(tk.Frame):  #displays trades
                        'delay' : self.delaySlider.getValues()[0],
                        'tick' : self.comboboxTick.get(),
                        'companyName': self.comboboxCN.get(),
-                       'member' : self.comboboxMembers.get()}
-        print(self.buyButton.get())
-        if self.buyButton.get() == 1:
-            self.filter['buy'] = True
-        else:
-            self.filter['buy'] = False
-        if self.sellButton.get() == 1:
-            self.filter['sell'] = True
-        else:
-            self.filter['sell'] = False
+                       'member' : self.comboboxMembers.get(),
+                       'buy' : self.buyButton.get(),
+                       'sell': self.sellButton.get()}
         print(self.filter)
             
     def _hide_trade(self, id):
@@ -417,23 +416,29 @@ class Page3(tk.Frame):  #displays trades
         
 class Page4(tk.Frame):
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, background="#121212")
         self.sba = stockBotAPI()
+        
+        self.style = ttk.Style()
+        self.style.configure("subtitle.TLabel", foreground="#ededed", background="#121212", font=("Verdana", 25))
         
         rowMenu = 1
         rowTitle = 2
         rowDetails = 3
         rowTable = 4
+
+        self.grid_rowconfigure(rowTable, weight=1)
         
         button1 = ttk.Button(self, text="Back", 
-        command = lambda : controller.show_frame(Page3))
+        command = lambda : controller.show_frame(Page3),
+        style="Page3.TButton")
         button1.grid(row=rowMenu, column=1, padx=10, pady=10, sticky='NW')
         
-        labelTitle = ttk.Label(self, text="Analysis", font=("Verdana", 35))
+        labelTitle = ttk.Label(self, text="Analysis", style="title.TLabel")
         labelTitle.grid(row=rowTitle, column=1, columnspan=2, padx=10, pady=10)
         
-        self.labelDetails = ttk.Label(self, text="")
-        self.labelDetails.grid(row=rowDetails, column=1, padx=10, pady=10)
+        self.labelDetails = ttk.Label(self, text="", style="body.TLabel")
+        self.labelDetails.grid(row=rowDetails, column=1, padx=10, pady=10, sticky="W")
         
         self._create_treeview()
         self.treev.grid(row=rowTable, column=1, columnspan=2, padx=10, pady=10)
@@ -446,12 +451,12 @@ class Page4(tk.Frame):
 
         displayText = f"""Average proft gained per trade: {analysis[0]}
 Average profit gained per trade after disclosure: {analysis[1]}
-Total amount invested: {analysis[2]}
-Total profit gained: {totalGainB}
-Total profit gained after disclosure: {totalGainD}
-% gain overall: {(totalGainB/analysis[2])*100}%
-% gain after disclosure: {(totalGainD/analysis[2])*100}%
-Biggest Earner: {analysis[4]['tick']} ${[analysis[4]['size']]} {analysis[4]['member']} {analysis[4]['dateB']}"""
+Total amount invested: ${round(analysis[2], 2)}
+Total profit gained: {round(totalGainB, 2)}
+Total profit gained after disclosure: {round(totalGainD, 2)}
+% gain overall: {round((totalGainB/analysis[2])*100, 2)}%
+% gain after disclosure: {round((totalGainD/analysis[2])*100, 2)}%
+Biggest Earner: {analysis[4]['tick']} ${analysis[4]['size']} {analysis[4]['member']} {analysis[4]['dateB']}"""
         
         self.labelLoading.grid_remove()
         self.labelDetails.grid(row=3, column=1, columnspan=2, padx=10, pady=10)
@@ -463,7 +468,7 @@ Biggest Earner: {analysis[4]['tick']} ${[analysis[4]['size']]} {analysis[4]['mem
         
     def start_loading(self):
         self.labelDetails.grid_remove()
-        self.labelLoading = ttk.Label(self, text="Loading...", font=("Verdana", 25))
+        self.labelLoading = ttk.Label(self, text="Loading...", style="subtitle.TLabel")
         self.labelLoading.grid(row=3, column=1, columnspan=2)
         
     def filter_trade(self, trade):
@@ -500,18 +505,26 @@ Biggest Earner: {analysis[4]['tick']} ${[analysis[4]['size']]} {analysis[4]['mem
 class CollapsiblePane(ttk.Frame):
     
     def __init__(self, parent, expanded_text="Filters <<", collapsed_text="Filters >>"):
-        ttk.Frame.__init__(self, parent)
+        style = ttk.Style()
+        style.configure("cp.TFrame", background="#121212")
+        ttk.Frame.__init__(self, parent, style="cp.TFrame")
         self.parent = parent
         self._expanded_text = expanded_text
         self._collapsed_text = collapsed_text
         self.columnconfigure(1, weight=1)
+        
+        
+        style.configure("cp.TCheckbutton", font=("Verdana", 12), background="#121212")
+        style.configure("cp.TSeparator", background="#121212")
+        style.configure("cp.TButton", background="#121212", foreground="#121212")
+
         self._variable = tk.IntVar()
         self._button = ttk.Checkbutton(self, variable=self._variable,
-                                       command = self._activate, style="TButton")
+                                       command = self._activate, style="cp.TButton")
         self._button.grid(row=0, column=0)
-        self._seperator = ttk.Separator(self, orient="horizontal")
+        self._seperator = ttk.Separator(self, orient="horizontal", style="cp.TSeparator")
         self._seperator.grid(row=0, column=1, sticky="we")
-        self.frame = ttk.Frame(self)
+        self.frame = ttk.Frame(self, style="cp.TFrame")
         self._activate()
         
     def _activate(self):
