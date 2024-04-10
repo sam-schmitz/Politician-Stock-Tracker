@@ -24,7 +24,7 @@ class tkinterApp(tk.Tk):
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
-        #10 x 10
+        container.grid_columnconfigure(4, weight=1)
         
         self.frames = {}
         
@@ -53,20 +53,29 @@ class tkinterApp(tk.Tk):
         
 class StartPage(tk.Frame):
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        label = ttk.Label(self, text="Startpage", font=("Verdana", 35))
-        label.grid(row=0, column=0, columnspan=5, rowspan=2, padx=10, pady=10)
+        tk.Frame.__init__(self, parent, background="#121212")
+        style = ttk.Style()
+        style.configure("BW.TLabel", foreground="white", background="#121212")
+        style.configure("BW.TButton", foreground="#121212", background="#121212")
+        label = ttk.Label(self, text="Politician Stock Tracker", font=("Verdana", 35), style="BW.TLabel")
+        label.grid(row=0, column=0, columnspan=5, rowspan=2, padx=10, pady=10, sticky="ES")
+        controller.grid_columnconfigure(1, weight=1)
+        controller.grid_columnconfigure(2, weight=1)
+        controller.grid_columnconfigure(3, weight=1)
+        controller.grid_columnconfigure(4, weight=1)
         
         #button1 = ttk.Button(self, text="Page 1",
         #command = lambda : controller.show_frame(Page1))
         #button1.grid(row=1, column=1, padx=10, pady=10)
         
         button2 = ttk.Button(self, text="Ananlysis",
-        command = lambda : controller.show_frame(Page2))
+        command = lambda : controller.show_frame(Page2),
+        style="BW.TButton")
         button2.grid(row=2, column=1, padx=10, pady=10)
         
         button3 = ttk.Button(self, text="Trades",
-        command = lambda : controller.show_frame(Page3))
+        command = lambda : controller.show_frame(Page3),
+        style="BW.TButton")
         button3.grid(row=2, column=3, padx=10, pady=10)
         
         api = stockBotAPI()
@@ -74,16 +83,16 @@ class StartPage(tk.Frame):
         oldestDate = api.get_oldest_date()
         api.close()
 
-        newestScrape1 = ttk.Label(self, text="Newest Scrape:")
+        newestScrape1 = ttk.Label(self, text="Newest Scrape:", style="BW.TLabel")
         newestScrape1.grid(row=3, column=1)
         
-        newestScrape2 = ttk.Label(self, text=newestDate)
+        newestScrape2 = ttk.Label(self, text=newestDate, style="BW.TLabel")
         newestScrape2.grid(row=4, column=1)
         
-        oldestScrape1 = ttk.Label(self, text="Oldest Scrape:")
+        oldestScrape1 = ttk.Label(self, text="Oldest Scrape:", style="BW.TLabel")
         oldestScrape1.grid(row=3, column=3)
         
-        oldestScrape2 = ttk.Label(self, text=oldestDate)
+        oldestScrape2 = ttk.Label(self, text=oldestDate, style="BW.TLabel")
         oldestScrape2.grid(row=4, column=3)
         
 class Page1(tk.Frame):  #scrapes for new data
@@ -208,19 +217,27 @@ class ComboboxSearch(ttk.Combobox):
 class Page3(tk.Frame):  #displays trades
     
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, background="#121212")
+        self.style = ttk.Style()
+        self.style.configure("BW.TLabel", foreground="white", background="#121212")
+        self.style.configure("BW.TButton", foreground="#121212", background="#121212")
+        self.style.configure("Treeview.Heading", background="#121212")
+        self.style.configure("BW.TCollapsiblePane")
+        self.style.configure("BW.TDateSlider")
         rowMenu = 0
         rowTitle = 1
         rowButtons = 2
         rowButtons2 = 3
         rowTable = 4
-        label = ttk.Label(self, text="Trades", font=("Verdana", 35))
+        label = ttk.Label(self, text="Trades", font=("Verdana", 35), style="BW.TLabel")
         label.grid(row=rowTitle, column=0, columnspan=2, padx=10, pady=10)
         
         button1 = ttk.Button(self, text="Back", 
-        command = lambda : controller.show_frame(StartPage))
-        button1.grid(row=rowMenu, column=0, padx=10, pady=10)
+        command = lambda : controller.show_frame(StartPage), 
+        style="BW.TButton")
+        button1.grid(row=rowMenu, column=0, padx=10, pady=10, sticky='NW')
         
+        self.treev = ttk.Treeview(self, selectmode='browse')
         self._create_treeview()
         self.treev.grid(row=rowTable, column=0, columnspan=2)
         
@@ -229,12 +246,14 @@ class Page3(tk.Frame):  #displays trades
         oldest_date = self.sba.get_oldest_date()
         
         buttonAnalyze = ttk.Button(self, text='Analyze',
-                                   command=lambda : controller.show_analysis(self.analysis()))
-        buttonAnalyze.grid(row=rowButtons, column=1, padx=10, pady=10)
+                                   command=lambda : controller.show_analysis(self.analysis()),
+                                   style="BW.TButton")
+        buttonAnalyze.grid(row=rowButtons, column=1, padx=10, pady=10, sticky='S')
         
         buttonApplyFilters = ttk.Button(self, text='Apply Filters',
-                                        command=self.display_trades)
-        buttonApplyFilters.grid(row=rowButtons2, column=1, padx=10, pady=10)
+                                        command=self.display_trades,
+                                        style="BW.TButton")
+        buttonApplyFilters.grid(row=rowButtons2, column=1, padx=10, pady=10, sticky="N")
         
         filters = CollapsiblePane(self)
         filters.grid(row=rowButtons, column=0, rowspan=2)
@@ -246,7 +265,7 @@ class Page3(tk.Frame):  #displays trades
         rowMember = 6
         
         #dates
-        labelDate = ttk.Label(filters.frame, text="Dates:").grid(row=rowDates, column=2, pady=5, padx=10)
+        labelDate = ttk.Label(filters.frame, text="Dates:", style="BW.TLabel").grid(row=rowDates, column=2, pady=5, padx=10)
         self.dateSlider = Slider_Datetime(filters.frame, min_val=oldest_date, max_val=newest_date, init_lis=[oldest_date, newest_date])
         self.dateSlider.grid(row=rowDates, column=3, columnspan=2)
         
@@ -373,7 +392,6 @@ class Page3(tk.Frame):  #displays trades
         self.tree.reattach(id, '', 0)   #0 == position where the row is reattached to
         
     def _create_treeview(self):
-        self.treev = ttk.Treeview(self, selectmode='browse')
         verscrlbar = ttk.Scrollbar(self, orient="vertical", command=self.treev.yview)
         self.treev.configure(xscrollcommand = verscrlbar.set)
         self.treev["columns"] = ("1", "2", "3", "4", "5", "6", "7")
@@ -409,7 +427,7 @@ class Page4(tk.Frame):
         
         button1 = ttk.Button(self, text="Back", 
         command = lambda : controller.show_frame(Page3))
-        button1.grid(row=rowMenu, column=1, padx=10, pady=10)
+        button1.grid(row=rowMenu, column=1, padx=10, pady=10, sticky='NW')
         
         labelTitle = ttk.Label(self, text="Analysis", font=("Verdana", 35))
         labelTitle.grid(row=rowTitle, column=1, columnspan=2, padx=10, pady=10)
@@ -441,7 +459,7 @@ Biggest Earner: {analysis[4]['tick']} ${[analysis[4]['size']]} {analysis[4]['mem
         for trade in analysis[5]:
             if self.filter_trade(trade):
                 trade['id'] = self.treev.insert("", 'end', text="L",
-                        values = (trade["tick"], trade["saleType"], trade["member"], trade['priceC'], trade['dateB'].strftime("%m-%d-%Y"), trade['priceB'], trade['gainB']))
+                        values = (trade["tick"], trade["saleType"], trade["member"], round(trade['priceC'], 2), trade['dateB'].strftime("%m-%d-%Y"), trade['priceB'], round(trade['gainB'], 2)))
         
     def start_loading(self):
         self.labelDetails.grid_remove()
