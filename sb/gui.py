@@ -14,7 +14,7 @@ from datetime import date
 from datetime import timedelta
     
 import tkinter as tk
-from tkinter import ttk, messagebox
+#from tkinter import ttk, messagebox
 import ttkbootstrap as ttk
     
 class tkinterApp(tk.Tk):
@@ -54,11 +54,11 @@ class tkinterApp(tk.Tk):
 class StartPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent, background="#121212")
-        self.style = ttk.Style()
-        self.style.configure("title.TLabel", foreground="#ededed", background="#121212", font=("Verdana", 35), weight="bold")
-        self.style.configure("body.TLabel", foreground="#ededed", background="#121212", font=("Verdana", 12))
-        self.style.configure("header.TLabel", foreground="#ededed", background="#121212", font=("Verdana", 14), weight="bold")
-        self.style.configure("BW.TButton", foreground="#121212", background="#121212", font=("Verdana", 12))
+        style = ttk.Style("darkly")
+        style.configure("title.TLabel", font=("Verdana", 35), weight="bold")
+        style.configure("body.TLabel", font=("Verdana", 12))
+        style.configure("header.TLabel", font=("Verdana", 14), weight="bold")
+        style.configure("BW.TButton", font=("Verdana", 12))
         label = ttk.Label(self, text="Politician Stock Tracker", style="title.TLabel", anchor="center")
         label.grid(row=0, column=0, columnspan=5, rowspan=2, padx=10, pady=25, sticky="NESW")
         controller.grid_columnconfigure(1, weight=1)
@@ -223,10 +223,10 @@ class Page3(tk.Frame):  #displays trades
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent, background="#121212")
         style = ttk.Style()
-        style.configure("Page3.TButton", foreground="#121212", background="#121212", font=("Verdana", 10))
-        style.configure("saletype.TCheckbutton", background="#121212", foreground="#ededed", font=("Verdana", 10))
-        style.configure("Treeview", background="#121212", foreground="#ededed")
-        style.configure("Treeview.Heading", background="#ededed", foreground="#121212")
+        style.configure("Page3.TButton", font=("Verdana", 10))
+        style.configure("saletype.TCheckbutton", font=("Verdana", 10))
+        style.configure("Treeview")
+        style.configure("Treeview.Heading")
         
         rowMenu = 0
         rowTitle = 1
@@ -416,11 +416,11 @@ class Page3(tk.Frame):  #displays trades
         
 class Page4(tk.Frame):
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent, background="#121212")
+        tk.Frame.__init__(self, parent)
         self.sba = stockBotAPI()
         
-        self.style = ttk.Style()
-        self.style.configure("subtitle.TLabel", foreground="#ededed", background="#121212", font=("Verdana", 25))
+        style = ttk.Style()
+        style.configure("subtitle.TLabel", font=("Verdana", 25))
         
         rowMenu = 1
         rowTitle = 2
@@ -506,7 +506,6 @@ class CollapsiblePane(ttk.Frame):
     
     def __init__(self, parent, expanded_text="Filters <<", collapsed_text="Filters >>"):
         style = ttk.Style()
-        style.configure("cp.TFrame", background="#121212")
         ttk.Frame.__init__(self, parent, style="cp.TFrame")
         self.parent = parent
         self._expanded_text = expanded_text
@@ -515,8 +514,8 @@ class CollapsiblePane(ttk.Frame):
         
         
         style.configure("cp.TCheckbutton", font=("Verdana", 12), background="#121212")
-        style.configure("cp.TSeparator", background="#121212")
-        style.configure("cp.TButton", background="#121212", foreground="#121212")
+        style.configure("cp.TSeparator")
+        style.configure("cp.TButton")
 
         self._variable = tk.IntVar()
         self._button = ttk.Checkbutton(self, variable=self._variable,
