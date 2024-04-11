@@ -51,16 +51,23 @@ class tkinterApp(tk.Tk):
     def hide_tree(self):
         pass
         
-class StartPage(tk.Frame):
+class StartPage(ttk.Frame):
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent, background="#121212")
-        style = ttk.Style("darkly")
-        style.configure("title.TLabel", font=("Verdana", 35), weight="bold")
-        style.configure("body.TLabel", font=("Verdana", 12))
-        style.configure("header.TLabel", font=("Verdana", 14), weight="bold")
-        style.configure("BW.TButton", font=("Verdana", 12))
+        style = ttk.Style("darkmode")
+        style.configure("TFrame", background="#121212")
+        ttk.Frame.__init__(self, parent, style="TFrame")
+        
+        style.configure("title.TLabel", background="#121212", font=("Verdana", 35), weight="bold")
+        style.configure("body.TLabel", background="#121212", foreground="#ededed", font=("Verdana", 12))
+        style.configure("header.TLabel", background="#121212", foreground="#ededed", font=("Verdana", 14), weight="bold")
+        style.configure("startpage.TButton",  
+                        font=("Verdana", 12),
+                        background="#121212"
+                        )
+        
         label = ttk.Label(self, text="Politician Stock Tracker", style="title.TLabel", anchor="center")
         label.grid(row=0, column=0, columnspan=5, rowspan=2, padx=10, pady=25, sticky="NESW")
+        
         controller.grid_columnconfigure(1, weight=1)
         controller.grid_columnconfigure(2, weight=1)
         controller.grid_columnconfigure(3, weight=1)
@@ -79,7 +86,7 @@ class StartPage(tk.Frame):
         
         button3 = ttk.Button(self, text="Trades",
         command = lambda : controller.show_frame(Page3),
-        style="BW.TButton")
+        style="startpage.TButton")
         button3.grid(row=2, column=2, padx=15, pady=10)
         
         api = stockBotAPI()
@@ -218,15 +225,18 @@ class ComboboxSearch(ttk.Combobox):
         self['values'] = filtered_options
    
         
-class Page3(tk.Frame):  #displays trades
+class Page3(ttk.Frame):  #displays trades
     
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent, background="#121212")
+        ttk.Frame.__init__(self, parent, style="TFrame")
         style = ttk.Style()
-        style.configure("Page3.TButton", font=("Verdana", 10))
-        style.configure("saletype.TCheckbutton", font=("Verdana", 10))
-        style.configure("Treeview")
-        style.configure("Treeview.Heading")
+        style.configure("m.TButton", background="#121212", foreground="#ededed", font=("Verdana", 10))
+        #style.configure("BW.TButton", background="#121212", foreground="#ededed", font=("Verdana", 12))
+        style.configure("Page3.TButton", background="#121212", foreground="#ededed", font=("Verdana", 10))
+        style.configure("saletype.on.TButton", background="#121212", foreground="#ededed", font=("Verdana", 10))
+        style.configure("saletype.off.TButton", background="#bebebe", foreground="#121212", font=("Verdana", 10))
+        style.configure("Treeview", background="#161616", foreground="#ededed")
+        style.configure("Treeview.Heading", background="#bebebe", foreground="#121212")
         
         rowMenu = 0
         rowTitle = 1
@@ -242,7 +252,7 @@ class Page3(tk.Frame):  #displays trades
         
         button1 = ttk.Button(self, text="Back", 
         command = lambda : controller.show_frame(StartPage), 
-        style="Page3.TButton")
+        style="m.TButton")
         button1.grid(row=rowMenu, column=0, padx=10, pady=10, sticky='NW')
         
         self.treev = ttk.Treeview(self, selectmode='browse')
@@ -303,8 +313,8 @@ class Page3(tk.Frame):  #displays trades
         self.sellButton = tk.BooleanVar()
         self.buyButton.set(True)
         self.sellButton.set(True)
-        bButton = ttk.Checkbutton(filters.frame, text="Buy", style="saletype.TCheckbutton", variable=self.buyButton)
-        sButton = ttk.Checkbutton(filters.frame, text="Sell", style="saletype.TCheckbutton", variable=self.sellButton)
+        bButton = ttk.Checkbutton(filters.frame, text="Buy", style="saletype.on.TButton", variable=self.buyButton)
+        sButton = ttk.Checkbutton(filters.frame, text="Sell", style="saletype.on.TButton", variable=self.sellButton)
         bButton.grid(row=rowTradeType, column=3, pady=5, padx=10)
         sButton.grid(row=rowTradeType, column=4, pady=5, padx=10)
         

@@ -190,7 +190,7 @@ class Slider(Frame):
             y_value = y + Slider.BAR_RADIUS + 8
             value = pos * (self.max_val - self.min_val) + self.min_val
             id_value = self.canv.create_text(
-                x, y_value, text=format(value, Slider.DIGIT_PRECISION)
+                x, y_value, text=format(value, Slider.DIGIT_PRECISION), fill="#ebebeb"
             )
             return [id_outer, id_inner, id_value]
         else:
@@ -203,7 +203,7 @@ class Slider(Frame):
         self.bars[idx]["Ids"] = self.__addBar(pos)
         self.bars[idx]["Pos"] = pos
         self.bars[idx]["Value"] = pos * (self.max_val - self.min_val) + self.min_val
-        self._val_change_callback(self.getValues())
+        #self._val_change_callback(self.getValues())
 
     def __calcPos(self, x):
         """calculate position from x coordinate"""
@@ -268,8 +268,6 @@ class Slider_Datetime(Frame):
             """for dt in init_lis:
                 dt = int(time.mktime(dt.timetuple()))
                 print(dt)"""
-        print(init_lis)
-        print(min_val, max_val)
 
         assert step_size >= 0, "step size must be positive"
         assert step_size <= max_val - min_val, "step size must be smaller than range"
@@ -418,7 +416,7 @@ class Slider_Datetime(Frame):
             y_value = y + Slider.BAR_RADIUS + 8
             value = pos * (self.max_val - self.min_val) + self.min_val
             id_value = self.canv.create_text(
-                x, y_value, text=datetime.fromtimestamp(value).strftime("%Y-%m-%d")
+                x, y_value, text=datetime.fromtimestamp(value).strftime("%Y-%m-%d"), fill="#ebebeb"
                 #x, y_value, text=format(value, Slider.DIGIT_PRECISION)
             )
             return [id_outer, id_inner, id_value]
