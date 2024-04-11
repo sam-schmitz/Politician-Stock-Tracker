@@ -163,13 +163,15 @@ def fill_committees():
     
         
 if __name__ == "__main__":
-    #filled with (2024, 3, 26) - (2024, 3, 1)
-    d1 = date(2024, 2, 29)
+    #filled with (2024, 4, 11) - (2024, 1, 1)
+    #check the database for duplicates
+        #When it finds the right page it grabs everything on the page not what fits the range
+    d1 = date(2024, 1, 31)
     #d1 = '2024-03-13'
     #d1 = date.today()
     #d2 = d1 - timedelta(days=3)
     #d2 = 20240313
-    d2 = date(2024, 2, 26)
+    d2 = date(2024, 1, 1)
     #data = fill(d1, d2)
     data = fill(datetime(d1.year, d1.month, d1.day), datetime(d2.year, d2.month, d2.day))
     for trade in data:

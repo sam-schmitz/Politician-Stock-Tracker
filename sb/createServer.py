@@ -17,6 +17,14 @@ if __name__ == "__main__":
     #cursor.execute('DROP TABLE trades; ''')
     #conn.commit()
 
+    #cursor.execute('DROP TABLE stocks; ')
+    #conn.commit()
+
+    #cursor.execute('DROP TABLE newestDate; ')
+    #conn.commit()
+    #cursor.execute('DROP TABLE oldestDate; ')
+    #conn.commit()
+
     cursor.execute(''' CREATE TABLE IF NOT EXISTS trades
                    (tradeID INTEGER PRIMARY KEY, stockID INTEGER FORGEIN KEY,
                    saleType TEXT, memberID INTEGER FORGEIN KEY,

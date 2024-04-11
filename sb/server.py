@@ -7,6 +7,8 @@ import sqlite3
 from trade import trade
 from datetime import datetime
 
+import yfinance as yf
+
 class stockBotAPI:
     
     def __init__(self, db=None):
@@ -65,9 +67,16 @@ class stockBotAPI:
         self.conn.commit()
         
     def add_stock(self, tick):
-        query = f"""INSERT INTO stocks (tick) 
-        VALUES ('{tick}')"""
-        self.cursor.execute(query)
+        tyf = yf.Ticker(tick)
+        info = tyf.info
+        query = f"""INSERT INTO stocks (tick, companyName, sector, industry) 
+        VALUES ('{tick}', '{info['longName']}', '{info['sector']}', '{info['industry']}')"""
+        print(query)
+        try:
+            self.cursor.execute(query)
+        except:
+            query = f'''INSERT INTO stocks (tick, companyName, sector, industry) VALUES ("{tick}", "{info['longName']}", "{info['sector']}", "{info['industry']}")'''
+            self.cursor.execute(query)
         self.conn.commit()
         
     def add_member(self, name):
@@ -160,6 +169,7 @@ class stockBotAPI:
     
     def get_oldest_date(self):  #returns the date of the oldest scraped data
         query = f'''SELECT MIN(date) FROM oldestDate ''' 
+        d = str(self.cursor.execute(query).fetchone()[0])
         return datetime.strptime(str(self.cursor.execute(query).fetchone()[0]), '%Y%m%d')
         
     def _fetchall_to_trades(self, fetchall):
