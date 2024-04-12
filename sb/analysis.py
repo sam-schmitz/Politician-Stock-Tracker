@@ -69,9 +69,25 @@ def _analyze(trades):
                 print(f"Data not found for {t['tick']}")
                 continue
             estAmt = sizeToEstAmt[t['size']]
+            pGainB = (cp-t['priceB'])/t['priceB']
+            pGainD = (cp-t['priceD'])/t['priceD']
+
+            print(estAmt)
+            print(f"current price: {cp}")
+            print(f"past price: {t['priceB']}")
+            print(f"disclosure price: {t['priceD']}")
+            print(f"past total: {t['priceB']*estAmt}")
+            print(f"disclosure total: {t['priceD']*estAmt}")
+            print(f"current total: {cp*estAmt}")
+            print(f"% gain B: {(cp-t['priceB'])/t['priceB']}")
+            
             gainB = (cp - t["priceB"]) * estAmt
+            gainB = pGainB * estAmt
             totalGainB += gainB
             gainD = (cp - t["priceD"]) * estAmt
+            gainD = pGainD * estAmt
+            print(f"gainB: {gainB}, {pGainB*estAmt}")
+            print(f"gainD: {gainD}")
             print("rows:", gainB, gainD)
             totalGainD += gainD
             totalInvested += estAmt
@@ -98,7 +114,7 @@ def _analyze(trades):
     print("Total amount invested: ", totalInvested)
     print("Total profit gained: ", totalGainB)
     print("Total profit gained after disclosure: ", totalGainD)
-    print("% gain overall: ", (totalGainB/totalInvested)*100 )
+    print("% gain overall: ", ((totalInvested-totalGainB)/totalGainB)*100 )
     print("% gain after disclosure: ", (totalGainD/totalInvested)*100)
     print(f"Biggest Earner: {biggestEarner['tick']} ${sizeToEstAmt[biggestEarner['size']]} {biggestEarner['member']} {biggestEarner['dateB']}'")
     biggestEarner['size'] = sizeToEstAmt[biggestEarner['size']]
