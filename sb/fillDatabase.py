@@ -1,6 +1,7 @@
 # fillDatabase.py
 # By: Sam Schmitz, Gavin Roy
 # fills the database
+# current fill can be found at the bottom by the main statement
 
 import sqlite3
 from datetime import datetime, timedelta, date
@@ -11,21 +12,31 @@ from server import stockBotAPI
 def fill(d1, d2):
     sba = stockBotAPI()
     check = _check_dates(d1, d2, sba)
-    trades = get_trades_d_to_d(d1, d2)
+    
+    #scrape the data
+    trades = get_trades_d_to_d(d1, d2)  
+    
+    #enter the data into the db
     for t in trades:
         sba.add_trade(trade=t)
+        
+    #update the db with the new dates 
     if check == "d1":
         sba.add_oldest_date(d2)
     else:
         sba.add_newest_date(d1)
+        
     sba.close()
     return trades
 
-def _check_dates(d1, d2, api):
+def _check_dates(d1, d2, api):  #validates the dates 
+    #check the value's type
     if isinstance(d1, datetime) == False:
         raise TypeError("d1 should be a date or datetime object")
     if isinstance(d2, datetime)==False:
         raise TypeError("d2 should be a date or datetime object")
+    
+    #compare d1 and d2 to the dates in the db
     nd = api.get_newest_date()
     od = api.get_oldest_date()
     newD = date(nd.year, nd.month, nd.day) + timedelta(days=1)
@@ -42,7 +53,7 @@ def _check_dates(d1, d2, api):
         return "d1"
     return "d2"
 
-def fill_members(): #adds a most of the members to 
+def fill_members(): #adds a most of the members to the db
     sba = stockBotAPI()
     pol = []
     
@@ -50,12 +61,14 @@ def fill_members(): #adds a most of the members to
     from selenium.webdriver.common.by import By
     from chromedriver_py import binary_path
 
+    #scrape the members
     driver = webdriver.Chrome(executable_path=binary_path)
     driver.get("https://www.congress.gov/help/field-values/member-bioguide-ids")
     tbody = driver.find_element(By.XPATH, "//table[@class='std full']/tbody")
     tb = tbody.text.split("\n")
     #print(tb)
-    for tr in tb[1:]:
+    for tr in tb[1:]:   #(last, first)
+        #turns the name from last, first to first last
         c = tr.find(",")
         p = tr.find("(")
         tr = tr[:p]
@@ -67,6 +80,7 @@ def fill_members(): #adds a most of the members to
     #VALUES '''
     for p in pol:
         #query += f"({p}), "
+        #some members have a ' or " in their name 
         try:
             query = f'''INSERT INTO members (Name) VALUES ("{p}")'''
             print(query)

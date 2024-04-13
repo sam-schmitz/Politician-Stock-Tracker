@@ -9,7 +9,7 @@ class trade:
 
 	def __init__(self, tick, saleType, dateBought, dateDis, member, size):
 		self.tick = tick
-		self.yf = yf.Ticker(self.tick)
+		self.yf = yf.Ticker(self.tick)	#obj that gets data from the yfinance library
 		self.saleType = saleType
 		self.dateB = dateBought	#date bought
 		self.priceB = self.pPrice(self.dateB)
@@ -18,21 +18,21 @@ class trade:
 		self.member = member
 		self.delay = int((self.dateD - self.dateB).days)
 		info = self.yf.get_info()
-		#problems with ETFs
+		#problems with ETFs and crypto
 		self.sector = info['sector']
 		self.industry = info['industry']
 		self.size = size	#1->1K-15K 2->15K-50K 3->50K-250K 4->250K-500K 5->500K-1M
 
 	def cPrice(self):
 		data =  self.yf.history()
-		print(data)
+		#print(data)
 		return round(data["Close"][-1], 2)
 
 	def pPrice(self, d):
 		start = d.strftime("%Y-%m-%d")
 		d2 = d + datetime.timedelta(days=1)
 		end = d2.strftime("%Y-%m-%d")
-		df = self.yf.history(start=start, end=end)
+		df = self.yf.history(start=start, end=end)	#returns a pandas df of price data
 		return round(df['Open'][0], 2)
 	
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 #tkSliderWidget.py
-#Source Code: MenxLi on github
+#based on source code by: MenxLi on github
+    #I created a modified version (Slider_Datetime) to work with dates and a custom theme
 
 import datetime
 from datetime import datetime

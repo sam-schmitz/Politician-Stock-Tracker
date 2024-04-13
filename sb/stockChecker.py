@@ -1,6 +1,6 @@
 #stockChecker.py
 # By: Sam Schmitz
-#methods for finding the price of a stock in US $
+# methods for finding the price of a stock in US $
 
 import datetime, time
 from datetime import date

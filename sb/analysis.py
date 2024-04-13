@@ -2,8 +2,8 @@
 # By: Sam Schmitz
 # methods for analyzing the data 
 
-from datetime import datetime, timedelta, date
-from math import isnan, nan
+from datetime import date
+from math import isnan
 import yfinance as yf
 
 from server import stockBotAPI
@@ -35,15 +35,17 @@ def analyze_given(trades):
     return _analyze(trades)
     
 def _analyze(trades):
+    #get a list of each tick so that we can scrape for the current prices in one go
     tickers = []
     for t in trades:
         tickers.append(t['tick'])
     d1 = date.today()
     
+    #collect the current price data from yf
     df = yf.download(tickers, start=d1) #no data if it is a weekend
-    print(df) 
+    #print(df) 
     
-    for t in range(len(trades)):
+    for t in range(len(trades)):    #put the current price with the associated trade
         trades[t]['cPrice'] = df[('Adj Close', trades[t]['tick'])][-1]
 
     totalGainB = 0
@@ -68,34 +70,29 @@ def _analyze(trades):
             if isnan(cp):
                 print(f"Data not found for {t['tick']}")
                 continue
+            
+            #find the percent gain in the stock price since the member bought it
             estAmt = sizeToEstAmt[t['size']]
             pGainB = (cp-t['priceB'])/t['priceB']
             pGainD = (cp-t['priceD'])/t['priceD']
-
-            print(estAmt)
-            print(f"current price: {cp}")
-            print(f"past price: {t['priceB']}")
-            print(f"disclosure price: {t['priceD']}")
-            print(f"past total: {t['priceB']*estAmt}")
-            print(f"disclosure total: {t['priceD']*estAmt}")
-            print(f"current total: {cp*estAmt}")
-            print(f"% gain B: {(cp-t['priceB'])/t['priceB']}")
             
-            gainB = (cp - t["priceB"]) * estAmt
+            #use the stock gain to calculate the gain in the traders portfolio
             gainB = pGainB * estAmt
             totalGainB += gainB
-            gainD = (cp - t["priceD"]) * estAmt
             gainD = pGainD * estAmt
-            print(f"gainB: {gainB}, {pGainB*estAmt}")
-            print(f"gainD: {gainD}")
-            print("rows:", gainB, gainD)
+            print(f"gainB: {gainB}, gainD: {gainD}")
+            
+            #update the runnning totals for the group
             totalGainD += gainD
             totalInvested += estAmt
-            print("totals:", totalGainB, totalGainD)
+            print(f"totalGainB: {totalGainB}, totalGainD: {totalGainD}")
+            
+            #check if this trade is the biggest earner
             if gainD > biggestGain:
                 biggestEarner = t
                 biggestGain = gainD
-                print(f"Biggest Earner: {t['tick']} ${estAmt} {t['member']} {t['dateB']}, {gainD}")
+                print(f"Biggest Earner: {t['tick']} ${estAmt} {t['member']} {t['dateB']}, {gainB}")
+                
             tradesAnalysis.append({'tick': t['tick'],
                            'gainB' : gainB,
                            'gainD' : gainD,
@@ -107,8 +104,10 @@ def _analyze(trades):
                            'saleType' : t['saleType'],
                            'dateB' : t['dateB'],
                            'dateD' : t['dateDis']})
+            
     avgGainB = round(totalGainB/len(trades), 2)
     avgGainD = round(totalGainD/len(trades), 2)
+    
     print("Average proft gained per trade: ", avgGainB)
     print("Average profit gained per trade after disclosure: ", avgGainD)
     print("Total amount invested: ", totalInvested)
@@ -117,17 +116,10 @@ def _analyze(trades):
     print("% gain overall: ", ((totalInvested-totalGainB)/totalGainB)*100 )
     print("% gain after disclosure: ", (totalGainD/totalInvested)*100)
     print(f"Biggest Earner: {biggestEarner['tick']} ${sizeToEstAmt[biggestEarner['size']]} {biggestEarner['member']} {biggestEarner['dateB']}'")
+    
     biggestEarner['size'] = sizeToEstAmt[biggestEarner['size']]
     return (avgGainB, avgGainD, totalInvested, len(trades), biggestEarner, tradesAnalysis)
     
 if __name__ == "__main__":
-    """d1 = date.today()
-    tickers = ['AAPL', 'MSFT']
-    df = yf.download(tickers, start=d1)
-    print(df.info())
-    print("column: ")
-    print(df[('Adj Close', 'AAPL')])
-    print("price: ")
-    print(df[('Adj Close', 'AAPL')][-1])"""
     analyze_all()
     #analyze_six_months_mem("Tommy Tuberville", datetime(2024, 3, 13))

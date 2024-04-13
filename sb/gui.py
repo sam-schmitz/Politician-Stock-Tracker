@@ -28,7 +28,7 @@ class tkinterApp(tk.Tk):
         
         self.frames = {}
         
-        for F in (StartPage, Page1, Page2, Page3, Page4):
+        for F in (StartPage, Page3, Page4):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -75,15 +75,6 @@ class StartPage(ttk.Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(4, weight=1)
         
-        #button1 = ttk.Button(self, text="Page 1",
-        #command = lambda : controller.show_frame(Page1))
-        #button1.grid(row=1, column=1, padx=10, pady=10)
-        
-        #button2 = ttk.Button(self, text="Ananlysis",
-        #command = lambda : controller.show_frame(Page2),
-        #style="BW.TButton")
-        #button2.grid(row=2, column=1, padx=10, pady=10)
-        
         button3 = ttk.Button(self, text="Trades",
         command = lambda : controller.show_frame(Page3),
         style="startpage.TButton")
@@ -106,113 +97,6 @@ class StartPage(ttk.Frame):
         oldestScrape2 = ttk.Label(self, text=oldestDate, style="body.TLabel")
         oldestScrape2.grid(row=4, column=3, padx=10)
         
-class Page1(tk.Frame):  #scrapes for new data
-    
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        label = ttk.Label(self, text="Page 1", font=("Verdana", 35))
-        label.grid(row=0, column=4, padx=10, pady=10)
-        
-        button1 = ttk.Button(self, text="StartPage", 
-        command = lambda : controller.show_frame(StartPage))
-        button1.grid(row=1, column=1, padx=10, pady=10)
-        
-        button2 = ttk.Button(self, text="Page 2", 
-        command = lambda : controller.show_frame(Page2))
-        button2.grid(row=2, column=2, padx=10, pady=10)
-        
-        def getCurrentClicked():
-            d1 = date.today()
-            d2 = d1-timedelta(days=3)
-            print("fill called with: ", datetime(d1.year, d1.month, d1.day), datetime(d2.year, d2.month, d2.day))
-            trades = fill(datetime(d1.year, d1.month, d1.day), datetime(d2.year, d2.month, d2.day))
-            for trade in trades:
-                self.treev.insert("", 'end', text="L",
-                             values = (trade.tick, trade.saleType, trade.member))
-
-        buttonGetAll = ttk.Button(self, text="Get Current", command = getCurrentClicked)
-        buttonGetAll.grid(row=1, column=4, padx=10, pady=10)
-        
-        self.treev = ttk.Treeview(self, selectmode='browse')
-        self.treev.grid(row=3, column=4)
-        verscrlbar = ttk.Scrollbar(self, orient="vertical", command=self.treev.yview)
-        self.treev.configure(xscrollcommand = verscrlbar.set)
-        self.treev["columns"] = ("1", "2", "3")
-        self.treev['show'] = 'headings'
-        self.treev.column("1", width=90, anchor='c')
-        self.treev.column("2", width=90, anchor='se')
-        self.treev.column("3", width=90, anchor='se')
-        self.treev.heading("1", text="Tick")
-        self.treev.heading("2", text="Sale Type")
-        self.treev.heading("3", text="Member")
-        
-                
-class Page2(tk.Frame):  #data analysis page
-    
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        rowTitle = 1
-        label = ttk.Label(self, text="Analysis", font=("Verdana", 35))
-        label.grid(row=rowTitle, column=0, columnspan=4, padx=10, pady=10)
-        
-        #button1 = ttk.Button(self, text="Page 1", 
-        #command = lambda : controller.show_frame(Page1))
-        #button1.grid(row=1, column=1, padx=10, pady=10)
-        
-        rowMenu = 0
-        button2 = ttk.Button(self, text="Back", 
-        command = lambda : controller.show_frame(StartPage))
-        button2.grid(row=rowMenu, column=0, padx=10, pady=10)
-        
-        def analyze_selection():
-            selection = combo.get()
-            d = dateSelector.get()
-            dateConverter = {"all" : None,
-                             "1 Day" : date.today()-timedelta(days=1),
-                             "1 Month" : date.today()-timedelta(days=30),
-                             "6 Months": date.today()-timedelta(days=180)}
-            d = dateConverter[d]
-            analysis = analyze_six_months_mem(selection, d)
-            if analysis == None:
-                messagebox.showinfo(
-                    message="No trades found in the timeframe",
-                    title='Results')
-            else:
-                messagebox.showinfo(
-                    message=f"The average gain from trades for {selection} is: {analysis[0]}\n The average gain after disclosure is: {analysis[1]}",
-                    title="Results")
-
-        rowAnalysisLabels = 2
-        labelMembers = ttk.Label(self, text="Member:")
-        labelMembers.grid(row=rowAnalysisLabels, column=0)
-        
-        labelDate = ttk.Label(self, text="Date:")
-        labelDate.grid(row=rowAnalysisLabels, column=1)
-
-        rowAnalysisButtons = 3
-        buttonAnalyze = ttk.Button(self, text="Display Selection",
-                            command=analyze_selection)
-        buttonAnalyze.grid(row=rowAnalysisButtons, column=2, padx=10, pady=5)
-        
-        sba = stockBotAPI()
-        members = sba.get_all_members()
-        members = ['all'] + members
-        sba.close()
-
-        combo = ttk.Combobox(
-            self, 
-            state="readonly",
-            values=members)
-        combo.current(0)
-        combo.grid(row=rowAnalysisButtons, column=0, padx=10, pady=5)
-        
-        dateOptions = ["all","1 Day", "1 Month", "6 Months"]
-        dateSelector = ttk.Combobox(self,
-                                    state="readonly",
-                                    values=dateOptions)
-        dateSelector.current(0)
-        dateSelector.grid(row=rowAnalysisButtons, column=1, padx=10, pady=5)
-        
 class ComboboxSearch(ttk.Combobox):
     
     def __init__(self, master=None, **kw):
@@ -230,13 +114,28 @@ class Page3(ttk.Frame):  #displays trades
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent, style="TFrame")
         style = ttk.Style()
-        style.configure("m.TButton", background="#121212", foreground="#ededed", font=("Verdana", 10))
-        #style.configure("BW.TButton", background="#121212", foreground="#ededed", font=("Verdana", 12))
-        style.configure("Page3.TButton", background="#121212", foreground="#ededed", font=("Verdana", 10))
-        style.configure("saletype.on.TButton", background="#121212", foreground="#ededed", font=("Verdana", 10))
-        style.configure("saletype.off.TButton", background="#bebebe", foreground="#121212", font=("Verdana", 10))
-        style.configure("Treeview", background="#161616", foreground="#ededed")
-        style.configure("Treeview.Heading", background="#bebebe", foreground="#121212")
+        style.configure("m.TButton", 
+                        background="#121212", 
+                        foreground="#ededed", 
+                        font=("Verdana", 10))
+        style.configure("Page3.TButton", 
+                        background="#121212", 
+                        foreground="#ededed", 
+                        font=("Verdana", 10))
+        style.configure("saletype.on.TButton", 
+                        background="#121212", 
+                        foreground="#ededed", 
+                        font=("Verdana", 10))
+        style.configure("saletype.off.TButton", 
+                        background="#bebebe", 
+                        foreground="#121212", 
+                        font=("Verdana", 10))
+        style.configure("Treeview", 
+                        background="#161616", 
+                        foreground="#ededed")
+        style.configure("Treeview.Heading", 
+                        background="#bebebe", 
+                        foreground="#121212")
         
         rowMenu = 0
         rowTitle = 1
@@ -247,13 +146,17 @@ class Page3(ttk.Frame):  #displays trades
         self.grid_rowconfigure(rowTable, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
-        label = ttk.Label(self, text="Trades", font=("Verdana", 35), style="title.TLabel")
-        label.grid(row=rowTitle, column=0, columnspan=3, padx=10, pady=10)
+        label = ttk.Label(self, text="Trades", 
+                          font=("Verdana", 35), 
+                          style="title.TLabel")
+        label.grid(row=rowTitle, column=0, columnspan=3, 
+                   padx=10, pady=10)
         
         button1 = ttk.Button(self, text="Back", 
         command = lambda : controller.show_frame(StartPage), 
         style="m.TButton")
-        button1.grid(row=rowMenu, column=0, padx=10, pady=10, sticky='NW')
+        button1.grid(row=rowMenu, column=0, 
+                     padx=10, pady=10, sticky='NW')
         
         self.treev = ttk.Treeview(self, selectmode='browse')
         self._create_treeview()
@@ -266,12 +169,14 @@ class Page3(ttk.Frame):  #displays trades
         buttonAnalyze = ttk.Button(self, text='Analyze',
                                    command=lambda : controller.show_analysis(self.analysis()),
                                    style="Page3.TButton")
-        buttonAnalyze.grid(row=rowButtons, column=2, padx=10, pady=10, sticky='S')
+        buttonAnalyze.grid(row=rowButtons, column=2, 
+                           padx=10, pady=10, sticky='S')
         
         buttonApplyFilters = ttk.Button(self, text='Apply Filters',
                                         command=self.display_trades,
                                         style="Page3.TButton")
-        buttonApplyFilters.grid(row=rowButtons2, column=2, padx=10, pady=10, sticky="N")
+        buttonApplyFilters.grid(row=rowButtons2, column=2, 
+                                padx=10, pady=10, sticky="N")
         
         filters = CollapsiblePane(self)
         filters.grid(row=rowButtons, column=0, rowspan=2, sticky="W")
@@ -283,46 +188,78 @@ class Page3(ttk.Frame):  #displays trades
         rowMember = 6
         
         #dates
-        labelDate = ttk.Label(filters.frame, text="Dates:", style="body.TLabel").grid(row=rowDates, column=2, pady=5, padx=10)
-        self.dateSlider = Slider_Datetime(filters.frame, min_val=oldest_date, max_val=newest_date, init_lis=[oldest_date, newest_date])
+        labelDate = ttk.Label(filters.frame, text="Dates:", 
+                              style="body.TLabel"
+                              ).grid(row=rowDates, column=2, pady=5, padx=10)
+        self.dateSlider = Slider_Datetime(filters.frame, 
+                                          min_val=oldest_date, 
+                                          max_val=newest_date, 
+                                          init_lis=[oldest_date, newest_date])
         self.dateSlider.grid(row=rowDates, column=3, columnspan=2)
         
         #delay
-        labelDelay = ttk.Label(filters.frame, text="Delay:", style="body.TLabel").grid(row=rowDelay, column=2, pady=5, padx=10)
-        self.delaySlider = Slider(filters.frame, min_val=0, max_val=50, init_lis=[50], step_size=1.0)
+        labelDelay = ttk.Label(filters.frame, text="Delay:",
+                               style="body.TLabel"
+                               ).grid(row=rowDelay, column=2, pady=5, padx=10)
+        self.delaySlider = Slider(filters.frame, 
+                                  min_val=0, 
+                                  max_val=50, 
+                                  init_lis=[50], 
+                                  step_size=1.0)
         self.delaySlider.grid(row=rowDelay, column=3, columnspan=2)
         
         self.trades = self.sba.get_all_trades()
         
         #ticks
         self.ticks = [trade['tick'] for trade in self.trades]
-        labelTick = ttk.Label(filters.frame, text="Ticks:", style="body.TLabel").grid(row=rowTicks, column=2, pady=5, padx=10)
+        labelTick = ttk.Label(filters.frame, text="Ticks:", 
+                              style="body.TLabel"
+                              ).grid(row=rowTicks, column=2, pady=5, padx=10)
         self.comboboxTick = ComboboxSearch(filters.frame, values=self.ticks)
-        self.comboboxTick.grid(row=rowTicks, column=3, columnspan=2, sticky='ew')
+        self.comboboxTick.grid(row=rowTicks, column=3, columnspan=2, 
+                               sticky='ew')
         
         #company names
         self.companyNames = [trade['companyName'] for trade in self.trades]
-        labelCompanyName = ttk.Label(filters.frame, text="Company Name:", style="body.TLabel").grid(row=rowCompanyNames, column=2, pady=5, padx=10)
+        labelCompanyName = ttk.Label(filters.frame, text="Company Name:", 
+                                     style="body.TLabel"
+                                     ).grid(row=rowCompanyNames, column=2, pady=5, padx=10)
         self.comboboxCN = ComboboxSearch(filters.frame, values=self.companyNames)
-        self.comboboxCN.grid(row=rowCompanyNames, column=3, columnspan=2, sticky='ew')
+        self.comboboxCN.grid(row=rowCompanyNames, column=3, columnspan=2,
+                             sticky='ew')
 
 
         #trade type
-        labelTradeType = ttk.Label(filters.frame, text="Trade Type:", style="body.TLabel").grid(row=rowTradeType, column=2, pady=5, padx=10)
+        labelTradeType = ttk.Label(filters.frame, text="Trade Type:",
+                                   style="body.TLabel"
+                                   ).grid(row=rowTradeType, column=2, pady=5, padx=10)
         self.buyButton = tk.BooleanVar()
         self.sellButton = tk.BooleanVar()
         self.buyButton.set(True)
         self.sellButton.set(True)
-        bButton = ttk.Checkbutton(filters.frame, text="Buy", style="saletype.on.TButton", variable=self.buyButton)
-        sButton = ttk.Checkbutton(filters.frame, text="Sell", style="saletype.on.TButton", variable=self.sellButton)
-        bButton.grid(row=rowTradeType, column=3, pady=5, padx=10)
-        sButton.grid(row=rowTradeType, column=4, pady=5, padx=10)
+        bButton = ttk.Checkbutton(filters.frame, 
+                                  text="Buy", 
+                                  style="saletype.on.TButton", 
+                                  variable=self.buyButton)
+        sButton = ttk.Checkbutton(filters.frame, 
+                                  text="Sell", 
+                                  style="saletype.on.TButton", 
+                                  variable=self.sellButton)
+        bButton.grid(row=rowTradeType, column=3, 
+                     pady=5, padx=10)
+        sButton.grid(row=rowTradeType, column=4, 
+                     pady=5, padx=10)
         
         #members
-        labelMembers = ttk.Label(filters.frame, text="Members:", style="body.TLabel").grid(row=rowMember, column=2, padx=10, pady=5)
+        labelMembers = ttk.Label(filters.frame, 
+                                 text="Members:", 
+                                 style="body.TLabel"
+                                 ).grid(row=rowMember, column=2, 
+                                        padx=10, pady=5)
         self.memberNames = self.sba.get_all_members()
         self.memberNames = ["all"] + self.memberNames
-        self.comboboxMembers = ComboboxSearch(filters.frame, values = self.memberNames)
+        self.comboboxMembers = ComboboxSearch(filters.frame, 
+                                              values = self.memberNames)
         self.comboboxMembers.grid(row=rowMember, column=3, columnspan=2)
         """self.selected_member = tk.StringVar(filters.frame)
         self.selected_member.set("all")
@@ -337,8 +274,16 @@ class Page3(ttk.Frame):  #displays trades
         self.treev.delete(*self.treev.get_children())
         for trade in self.trades:
             if self.filter_trade(trade):
-                trade['id'] = self.treev.insert("", 'end', text="L",
-                        values = (trade["tick"], trade["saleType"], trade["member"], trade['dateDis'].strftime("%m-%d-%Y"), trade['dateB'].strftime("%m-%d-%Y"), trade['delay'], trade['companyName']))
+                trade['id'] = self.treev.insert("", 'end',
+                                                text="L",
+                        values = (trade["tick"], 
+                                  trade["saleType"], 
+                                  trade["member"], 
+                                  trade['dateDis'].strftime("%m-%d-%Y"), 
+                                  trade['dateB'].strftime("%m-%d-%Y"), 
+                                  trade['delay'], 
+                                  trade['companyName'])
+                        )
         
     def filter_trade(self, trade):
         if trade['dateDis'] > self.filter['d1']:
@@ -442,16 +387,20 @@ class Page4(tk.Frame):
         button1 = ttk.Button(self, text="Back", 
         command = lambda : controller.show_frame(Page3),
         style="Page3.TButton")
-        button1.grid(row=rowMenu, column=1, padx=10, pady=10, sticky='NW')
+        button1.grid(row=rowMenu, column=1, 
+                     padx=10, pady=10, sticky='NW')
         
         labelTitle = ttk.Label(self, text="Analysis", style="title.TLabel")
-        labelTitle.grid(row=rowTitle, column=1, columnspan=2, padx=10, pady=10)
+        labelTitle.grid(row=rowTitle, column=1, columnspan=2, 
+                        padx=10, pady=10)
         
         self.labelDetails = ttk.Label(self, text="", style="body.TLabel")
-        self.labelDetails.grid(row=rowDetails, column=1, padx=10, pady=10, sticky="W")
+        self.labelDetails.grid(row=rowDetails, column=1,
+                               padx=10, pady=10, sticky="W")
         
         self._create_treeview()
-        self.treev.grid(row=rowTable, column=1, columnspan=2, padx=10, pady=10)
+        self.treev.grid(row=rowTable, column=1, columnspan=2,
+                        padx=10, pady=10)
         
     def start_analysis(self, trades):
         analysis = analyze_given(trades)
@@ -469,12 +418,20 @@ Total profit gained after disclosure: {round(totalGainD, 2)}
 Biggest Earner: {analysis[4]['tick']} ${analysis[4]['size']} {analysis[4]['member']} {analysis[4]['dateB']}"""
         
         self.labelLoading.grid_remove()
-        self.labelDetails.grid(row=3, column=1, columnspan=2, padx=10, pady=10)
+        self.labelDetails.grid(row=3, column=1, columnspan=2,
+                               padx=10, pady=10)
         self.labelDetails.config(text=displayText)
         for trade in analysis[5]:
             if self.filter_trade(trade):
                 trade['id'] = self.treev.insert("", 'end', text="L",
-                        values = (trade["tick"], trade["saleType"], trade["member"], round(trade['priceC'], 2), trade['dateB'].strftime("%m-%d-%Y"), trade['priceB'], round(trade['gainB'], 2)))
+                        values = (trade["tick"],
+                                  trade["saleType"],
+                                  trade["member"],
+                                  round(trade['priceC'], 2),
+                                  trade['dateB'].strftime("%m-%d-%Y"),
+                                  trade['priceB'],
+                                  round(trade['gainB'], 2)
+                            ))
         
     def start_loading(self):
         self.labelDetails.grid_remove()
