@@ -2,6 +2,7 @@
 # By: Sam Schmitz, Gavin Roy
 # creates/resets the database to be used by server.py
 
+import datetime
 import sqlite3
 
 if __name__ == "__main__":
@@ -62,6 +63,14 @@ if __name__ == "__main__":
         #not currently working
     #from fillDatabase import fill_committees
     #fill_committees()
+        
+    #sets up the oldest and newest date tables
+    """date = datetime.now()
+    query = f'INSERT INTO newestDate (date) VALUES ({date.strftime("%Y%m%d")})'
+    cursor.execute(query)
+    query = f'INSERT INTO oldestDate (date) VALUES ({date.strftime("%Y%m%d")})'
+    cursor.execute(query)
+    conn.commit()"""
     
     
     

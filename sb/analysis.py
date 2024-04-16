@@ -8,8 +8,23 @@ import yfinance as yf
 
 from server import stockBotAPI
 from stockChecker import cPrice
+    
+def analyze_all(date=None):     #analyzes all the trades in the db
+    #date -> datetime obj
+    api = stockBotAPI()
+    trades = api.get_all_trades(date=date)
+    if len(trades) == 0:
+        print("No trades meet the parameters")
+        return None
+    return _analyze(trades)
 
-def analyze_six_months_mem(mem, date=None):
+def analyze_given(trades):  #analyzes a given list of trades
+    #trades = list of dictionaries
+    return _analyze(trades)
+
+def analyze_six_months_mem(mem, date=None): #originally analyzed trades in the last 6 months now trades before a date
+    #date -> datetime obj
+    #mem -> string -> First Last
     if mem == 'all':
         return analyze_all()
     #calculates the average percent the given member has made
@@ -23,18 +38,7 @@ def analyze_six_months_mem(mem, date=None):
         return None
     return _analyze(trades)
     
-def analyze_all(date=None):
-    api = stockBotAPI()
-    trades = api.get_all_trades(date=date)
-    if len(trades) == 0:
-        print("No trades meet the parameters")
-        return None
-    return _analyze(trades)
-
-def analyze_given(trades):
-    return _analyze(trades)
-    
-def _analyze(trades):
+def _analyze(trades):   #helper function that does the analyzing
     #get a list of each tick so that we can scrape for the current prices in one go
     tickers = []
     for t in trades:

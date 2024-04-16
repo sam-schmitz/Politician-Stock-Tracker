@@ -8,19 +8,16 @@ from fillDatabase import fill
 from server import stockBotAPI
 from analysis import analyze_six_months_mem, analyze_given
 from tkSliderWidget import Slider, Slider_Datetime
-
-from datetime import datetime
-from datetime import date
-from datetime import timedelta
     
 import tkinter as tk
 #from tkinter import ttk, messagebox
 import ttkbootstrap as ttk
     
-class tkinterApp(tk.Tk):
+class tkinterApp(tk.Tk):    #class which the app is built upon
     
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
+        #sets up the frame that holds everything
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
@@ -28,35 +25,32 @@ class tkinterApp(tk.Tk):
         
         self.frames = {}
         
+        #opens the pages and stores them for later use
         for F in (StartPage, Page3, Page4):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
         self.show_frame(StartPage)
         
-    def show_frame(self, cont):
+    def show_frame(self, cont):     #switches the active frame
         frame = self.frames[cont]
         frame.tkraise()
         
-    def show_analysis(self, trades):
+    def show_analysis(self, trades):        #runs the analysis and switches the frame
         frame = self.frames[Page4]
         frame.start_loading()
         frame.tkraise()
         self.update()
         frame.start_analysis(trades)
         
-    def show_tree(self):
-        pass
-    
-    def hide_tree(self):
-        pass
         
-class StartPage(ttk.Frame):
+class StartPage(ttk.Frame):     #homepage/start
     def __init__(self, parent, controller):
         style = ttk.Style("darkmode")
         style.configure("TFrame", background="#121212")
         ttk.Frame.__init__(self, parent, style="TFrame")
         
+        #sets up the styles for the individual widgets
         style.configure("title.TLabel", background="#121212", font=("Verdana", 35), weight="bold")
         style.configure("body.TLabel", background="#121212", foreground="#ededed", font=("Verdana", 12))
         style.configure("header.TLabel", background="#121212", foreground="#ededed", font=("Verdana", 14), weight="bold")
@@ -65,9 +59,11 @@ class StartPage(ttk.Frame):
                         background="#121212"
                         )
         
+        #title label
         label = ttk.Label(self, text="Politician Stock Tracker", style="title.TLabel", anchor="center")
         label.grid(row=0, column=0, columnspan=5, rowspan=2, padx=10, pady=25, sticky="NESW")
         
+        #configures the grid so that it fits the window
         controller.grid_columnconfigure(1, weight=1)
         controller.grid_columnconfigure(2, weight=1)
         controller.grid_columnconfigure(3, weight=1)
@@ -75,6 +71,7 @@ class StartPage(ttk.Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(4, weight=1)
         
+        #switches to the trades page/Page3
         button3 = ttk.Button(self, text="Trades",
         command = lambda : controller.show_frame(Page3),
         style="startpage.TButton")
@@ -85,19 +82,21 @@ class StartPage(ttk.Frame):
         oldestDate = api.get_oldest_date()
         api.close()
 
+        #displays the date of the newest scrape
         newestScrape1 = ttk.Label(self, text="Newest Scrape:", style="header.TLabel")
         newestScrape1.grid(row=3, column=1)
         
         newestScrape2 = ttk.Label(self, text=newestDate, style="body.TLabel")
         newestScrape2.grid(row=4, column=1)
         
+        #displays the date of the oldest scrape
         oldestScrape1 = ttk.Label(self, text="Oldest Scrape:", style="header.TLabel")
         oldestScrape1.grid(row=3, column=3, padx=10)
         
         oldestScrape2 = ttk.Label(self, text=oldestDate, style="body.TLabel")
         oldestScrape2.grid(row=4, column=3, padx=10)
         
-class ComboboxSearch(ttk.Combobox):
+class ComboboxSearch(ttk.Combobox):     #a combobox that can search for like strings
     
     def __init__(self, master=None, **kw):
         super().__init__(master, **kw)
@@ -113,6 +112,8 @@ class Page3(ttk.Frame):  #displays trades
     
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent, style="TFrame")
+        
+        #styles for use in this page
         style = ttk.Style()
         style.configure("m.TButton", 
                         background="#121212", 
@@ -137,27 +138,32 @@ class Page3(ttk.Frame):  #displays trades
                         background="#bebebe", 
                         foreground="#121212")
         
+        #rows as variables
         rowMenu = 0
         rowTitle = 1
         rowButtons = 2
         rowButtons2 = 3
         rowTable = 4
         
+        #configures the frame to fit the screen
         self.grid_rowconfigure(rowTable, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
+        #title label
         label = ttk.Label(self, text="Trades", 
                           font=("Verdana", 35), 
                           style="title.TLabel")
         label.grid(row=rowTitle, column=0, columnspan=3, 
                    padx=10, pady=10)
         
+        #button to go back to the StartPage
         button1 = ttk.Button(self, text="Back", 
         command = lambda : controller.show_frame(StartPage), 
         style="m.TButton")
         button1.grid(row=rowMenu, column=0, 
                      padx=10, pady=10, sticky='NW')
         
+        #the table that displays data
         self.treev = ttk.Treeview(self, selectmode='browse')
         self._create_treeview()
         self.treev.grid(row=rowTable, column=0, columnspan=3)
@@ -166,20 +172,25 @@ class Page3(ttk.Frame):  #displays trades
         newest_date = self.sba.get_newest_date()
         oldest_date = self.sba.get_oldest_date()
         
+        #the button to run the analysis
         buttonAnalyze = ttk.Button(self, text='Analyze',
                                    command=lambda : controller.show_analysis(self.analysis()),
                                    style="Page3.TButton")
         buttonAnalyze.grid(row=rowButtons, column=2, 
                            padx=10, pady=10, sticky='S')
         
+        #the button to apply filters
         buttonApplyFilters = ttk.Button(self, text='Apply Filters',
                                         command=self.display_trades,
                                         style="Page3.TButton")
         buttonApplyFilters.grid(row=rowButtons2, column=2, 
                                 padx=10, pady=10, sticky="N")
-        
+            
+        #the hideable frame where the filters are stored
         filters = CollapsiblePane(self)
         filters.grid(row=rowButtons, column=0, rowspan=2, sticky="W")
+        
+        #rows for the fitlers frame
         rowDates = 1
         rowDelay = 2
         rowTicks = 3

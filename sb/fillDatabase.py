@@ -9,7 +9,8 @@ from datetime import datetime, timedelta, date
 from congressTrades import get_trades_d_to_d
 from server import stockBotAPI
 
-def fill(d1, d2):
+def fill(d1, d2):   #fills the database with data from d1 - d2
+    #d1, d2 -> datetime obj
     sba = stockBotAPI()
     check = _check_dates(d1, d2, sba)
     
@@ -57,6 +58,7 @@ def fill_members(): #adds a most of the members to the db
     sba = stockBotAPI()
     pol = []
     
+    #imports for scraping
     from selenium import webdriver
     from selenium.webdriver.common.by import By
     from chromedriver_py import binary_path
@@ -91,7 +93,8 @@ def fill_members(): #adds a most of the members to the db
             sba.query(query)
     sba.close()
     
-def fill_committees():
+def fill_committees():  #fills the database table committees with their asocitated sectors/industries
+    #not finished yet
     sba = stockBotAPI()
     committees = ["Agriculture", "Appropriations", "Armed Services", "Budget",
                   "Education and the Workforce", "Energy and Commerce", "Ethics",

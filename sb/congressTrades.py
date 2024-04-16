@@ -93,8 +93,7 @@ def _getPageInfo(dateStop, pageNum, member=None):
         #print("row data:", tick[1], saleType, dateBought, dateDis, member)
     return stop, pageInfo
 
-def get_trades_d_to_d(d1, d2, member=None):
-    #similar to get_trades but gathers info in between a range of dates
+def get_trades_d_to_d(d1, d2, member=None):     #similar to get_trades but gathers info in between a range of dates
     stockData = []
     stop = False
     pageNum = 0
@@ -128,7 +127,7 @@ def get_trades_d_to_d(d1, d2, member=None):
         t += 1
     return stockData
 
-def _get_page_info_start(dateStart, pageNum, member=None):
+def _get_page_info_start(dateStart, pageNum, member=None):  #gets the page where the data will start
     #open the webpage
     driver = webdriver.Chrome(executable_path=binary_path)
     if member != None:
