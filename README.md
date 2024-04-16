@@ -16,6 +16,14 @@ Import GUI theme
   In the sb folder open the command line and enter python -m ttkcreator
   From there use import to open the user.py file
 
+Packages (all pip installable): 
+  chromedriver-py
+  yfinance
+  selenium
+  ttkbootstrap
+  sqlite
+  
+
 To run the project run the GUI.py file
 
 
